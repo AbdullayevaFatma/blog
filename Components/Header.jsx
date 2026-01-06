@@ -1,76 +1,189 @@
-import axios from "axios";
-import { assets } from "../Assets/assets";
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { Input } from "../Components/ui/input";
+import { Button } from "../Components/ui/button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import { useForm } from "react-hook-form";
+import { useAuth } from "@/lib/context/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/Components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
+
+const emailFormSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
 
 const Header = () => {
-  const [email, setEmail] = useState("");
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    if (!email) {
-      toast.error("Email is required");
-      return;
-    }
+  const form = useForm({
+    resolver: zodResolver(emailFormSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const { user, loading, logout } = useAuth();
+  const router = useRouter();
+
+  const onSubmit = async (values) => {
     try {
       const formData = new FormData();
-      formData.append("email", email);
+      formData.append("email", values.email);
 
-      const response = await axios.post("/api/email", formData);
+      const response = await api.post("/email", formData);
 
-      toast.success(response.data.message);
-      setEmail("");
-    } catch (error) {
-      // Backend’den gelen mesaj
-      if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong");
+      if (response.data.success) {
+        toast.success(response.data.message);
+        form.reset();
       }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
+
+  const handleUserDashboard = () => {
+    router.push("/user");
+  };
+
+  const handleAdminPanel = () => {
+    router.push("/admin/addBlog");
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
+
   return (
-    <div className="py-5 px-5 md:px-12 lg:px-28">
-      {" "}
-      <div className="flex justify-between items-center">
-        {" "}
-        <Image
-          src={assets.logo}
-          width={180}
-          alt="logo"
-          className="w-32.5 sm:w-auto"
-        />{" "}
-        <button className="flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-black shadow-[-7px_7px_0px_#000000]">
-          Get Started{" "}
-          <Image src={assets.arrow} alt="arrow icon" width={16} height={16} />{" "}
-        </button>{" "}
-      </div>{" "}
-      <div className="text-center my-8">
-        <h1 className="text-3xl sm:text-5xl font-medium">Latest Blogs</h1>
-        <p className="mt-10 max-w-185 m-auto text-xs sm:text-base">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde neque
-          reiciendis, quis iure consequuntur beatae.
-        </p>
-        <form
-          onSubmit={onSubmitHandler}
-          className="flex justify-between max-w-125 scale-75 sm:scale-100 mx-auto mt-10 border border-black shadow-[-7px_7px_0px_#000000]"
-        >
-          <input
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            type="email"
-            placeholder="Enter your email"
-            className="grow pl-4 outline-none"
-          />
-          <button
-            type="submit"
-            className="border-l border-black py-4 px-4 sm:px-8 active:bg-gray-600 active:text-white"
-          >
-            Subscribe
-          </button>
-        </form>
+    <>
+      <div className="relative bg-emerald-950 py-5 px-5 md:px-12 lg:px-28 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent)]" />
+        <div className="relative z-10 flex justify-between items-center">
+          <Link href="/">
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-wide text-emerald-50 cursor-pointer hover:text-emerald-100 transition-colors duration-300">
+              blog.
+            </h1>
+          </Link>
+          <div className="flex items-center gap-4">
+            {!loading && !user && (
+              <Button onClick={() => router.push("/auth/signup")}>
+                Start Blogging
+              </Button>
+            )}
+            {!loading && user && (
+              <>
+                <Button
+                  onClick={() => router.push("/user")}
+                  className="bg-linear-to-r from-emerald-400 to-emerald-700"
+                >
+                  Dashboard
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="focus:outline-none rounded-full">
+                      <Image
+                        src={user.avatar || "/profile_icon.png"}
+                        width={42}
+                        height={42}
+                        className="rounded-full cursor-pointer border-2 border-emerald-600 hover:border-emerald-500 transition-colors"
+                        alt="avatar"
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-3">
+                      <p className="text-sm font-semibold text-zinc-100">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-zinc-400 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+
+                    <DropdownMenuSeparator />
+                    {user.role === "admin" && (
+                      <DropdownMenuItem
+                        onClick={handleAdminPanel}
+                        className="cursor-pointer"
+                      >
+                        Admin Panel
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      onClick={handleUserDashboard}
+                      className="cursor-pointer"
+                    >
+                      User Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="cursor-pointer text-red-400 focus:text-red-300 focus:bg-red-950"
+                    >
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div className="text-center my-20 px-5 md:px-12 lg:px-28">
+        <div className="gradient-blur-dark-vibrant rounded-2xl p-8 sm:p-12 border border-zinc-800/50 backdrop-blur-sm">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4 bg-linear-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+            Latest Blogs
+          </h1>
+          <p className="mt-4 max-w-2xl mx-auto text-sm sm:text-base text-zinc-400">
+            Discover amazing stories and insights from our community of writers.
+          </p>
+          <div className="mt-8">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+              >
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="flex-1 m-0">
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Enter your email"
+                          className="border-emerald-400"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="bg-linear-to-r from-emerald-400 to-emerald-700 "
+                >
+                  Subscribe
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

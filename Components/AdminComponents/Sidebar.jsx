@@ -1,29 +1,39 @@
-import { assets } from "@/Assets/assets";
-import Image from "next/image";
+import { Plus, FileText, Mail } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 const Sidebar = () => {
   return (
-    <div className="flex flex-col bg-slate-100">
-      <div className="px-2 sm:pl-14 py-3 border border-black">
-        <Image src={assets.logo} alt="logo" width={120} />
+    <div className="flex flex-col gap-6 bg-emerald-600/20 h-screen min-w-40 sm:min-w-50 md:w-80 overflow-hidden p-4">
+      <div className="text-start mb-6">
+        <Link href="/">
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-wide text-emerald-50 cursor-pointer hover:text-emerald-100 transition-colors duration-300">
+            blog.
+          </h1>
+        </Link>
       </div>
-      <div className="w-28 sm:w-80 h-screen relative py-12 border border-black">
-        <div className="w-[50%] sm:w-[80%] absolute right-0">
-          <Link href="/admin/addProduct" className="flex items-center border border-black gap-3 font-medium px-3 py-2 bg-white shadow-[-5px_5px_0px_#000000]">
-            <Image src={assets.add_icon} alt="add icon" width={28} />{" "}
-            <p>Add blogs</p>
-          </Link>
-          <Link href="/admin/blogList" className="mt-5 flex items-center border border-black gap-3 font-medium px-3 py-2 bg-white shadow-[-5px_5px_0px_#000000]">
-            <Image src={assets.blog_icon} alt="blog icon" width={28} />{" "}
-            <p>Blog lists</p>
-          </Link>
-          <Link href="/admin/subscriptions" className="mt-5 flex items-center border border-black gap-3 font-medium px-3 py-2 bg-white shadow-[-5px_5px_0px_#000000]">
-            <Image src={assets.email_icon} alt="email icon" width={28} />{" "}
-            <p>Subscriptions</p>
-          </Link>
-        </div>
+      <div className="flex flex-col items-center gap-4">
+        <Link
+          href="/admin/addBlog"
+          className="flex items-center gap-2 sm:gap-3 font-medium px-3 py-2 bg-zinc-900 rounded-xl  shadow-zinc-500 shadow  w-full max-w-55"
+        >
+          <Plus size={24} />
+          <p className="truncate">Add blogs</p>
+        </Link>
+        <Link
+          href="/admin/blogList"
+          className="flex items-center gap-2 sm:gap-3 font-medium px-3 py-2 bg-zinc-900 rounded-xl  shadow-zinc-500 shadow  w-full max-w-55"
+        >
+          <FileText size={24} />
+          <p className="truncate">Blog lists</p>
+        </Link>
+        <Link
+          href="/admin/subscriptions"
+          className="flex items-center gap-2 sm:gap-3 font-medium px-3 py-2 bg-zinc-900 rounded-xl  shadow-zinc-500 shadow  w-full max-w-55"
+        >
+          <Mail size={24} />
+          <p className="truncate">Subscriptions</p>
+        </Link>
       </div>
     </div>
   );

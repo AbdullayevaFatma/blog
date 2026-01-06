@@ -1,87 +1,106 @@
-"use client"
-import BlogItem from "./BlogItem"
-import { useEffect, useState } from "react"
-import axios from "axios"
+"use client";
 
+import BlogItem from "./BlogItem";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios";
 
 const BlogList = () => {
-  const [menu,setMenu] = useState("All")
-  const [blogs,setBlogs] = useState([])
-  const [loading, setLoading] = useState(true)  // Başlangıçta yükleniyor
-const [error, setError] = useState(null) 
-const categories = ["All", "Technology", "Startup", "Lifestyle"] 
-const fetchBlogs = async () => {
-  try {
-    // setLoading(true) burada YOK çünkü zaten başlangıçta true
-    const response = await axios.get("/api/blog")
-    setBlogs(response.data.blogs)
-  } catch (error) {
-    console.error( error)
-    setError('Bloglar yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin.')
-  } finally {
-    setLoading(false)
-  }
-}
+  const [menu, setMenu] = useState("All");
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const categories = ["All", "Technology", "Startup", "Lifestyle"];
 
-  useEffect(()=>{
-    fetchBlogs()
-  },[])
+  const fetchBlogs = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.get("/blog");
+      setBlogs(response.data.blogs || []);
+    } catch (error) {
+      console.error(error);
+      setError(
+        "An error occurred while loading the blogs. Please refresh the page.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
 
   if (loading) {
-  return (
-    <div className="flex justify-center items-center min-h-100">
-      <p className="text-lg">Loading...</p>
-    </div>
-  )
-}
-if (error) {
-  return (
-    <div className="flex justify-center items-center-100">
-      <div className="text-center">
-        <p className="text-red-600 mb-4">{error}</p>
-        <button 
-          onClick={fetchBlogs}
-          className="bg-black text-white py-2 px-4 rounded"
-        >
-         Try Again
-        </button>
+    return (
+      <div className="flex justify-center items-center min-h-100 py-20">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg text-zinc-400">Loading...</p>
+        </div>
       </div>
-    </div>
-  )
-}
-if (blogs.length === 0) {
-  return (
-    <div className="flex justify-center items-center min-h-100">
-      <p className="text-lg text-gray-600">No posts found.</p>
-    </div>
-  )
-}
-  return (
-    <div>
-      <div className="flex justify-center gap-6 my-10">
-      {categories.map((cat) => (
-        <button
-          key={cat}
-          onClick={() => setMenu(cat)}
-          className={
-            menu === cat 
-              ? "bg-black text-white py-1 px-4 rounded-sm cursor-pointer" 
-              : "py-1 px-4 rounded-sm cursor-pointer hover:bg-gray-100"
-          }
-        >
-          {cat}
-        </button>
-      ))}
-    </div>
-      <div className="flex flex-wrap justify-around gap-1 gap-y-10 mb-16 xl:mx-24">
-        {
-          blogs.filter((item)=>menu=== "All" ? true : item.category===menu).map((item)=>{
-            return <BlogItem key={item._id} id={item._id} image={item.image} title={item.title} description={item.description} category={item.category}/>
-          })
-        }
-      </div>
-    </div>
-  )
-}
+    );
+  }
 
-export default BlogList
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-100 py-20">
+        <div className="text-center max-w-md mx-auto p-8 bg-zinc-900 rounded-xl border border-red-500/30">
+          <p className="text-zinc-100 mb-4">{error}</p>
+          <button
+            onClick={fetchBlogs}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-6 rounded-lg transition-all"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (blogs.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-100 py-20">
+        <p className="text-lg text-zinc-400">No posts found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-5 md:px-12 lg:px-28">
+      {/* Category Filter Buttons */}
+      <div className="flex flex-wrap justify-center gap-3 my-10">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setMenu(cat)}
+            className={
+              menu === cat
+                ? "bg-linear-to-r from-emerald-400 to-emerald-700 text-white py-2 px-6 rounded-full font-semibold shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:shadow-emerald-600/40"
+                : "bg-zinc-800 border border-zinc-700 text-zinc-300 py-2 px-6 rounded-full font-medium hover:border-emerald-600 hover:text-emerald-400 transition-all duration-300"
+            }
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 justify-items-center">
+        {blogs
+          .filter((item) => (menu === "All" ? true : item.category === menu))
+          .map((item) => (
+            <BlogItem
+              key={item._id}
+              id={item._id}
+              image={item.image}
+              title={item.title}
+              description={item.description}
+              category={item.category}
+            />
+          ))}
+      </div>
+    </div>
+  );
+};
+
+export default BlogList;

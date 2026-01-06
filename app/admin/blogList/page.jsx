@@ -1,75 +1,121 @@
 "use client";
 
 import BlogTableItem from "@/Components/AdminComponents/BlogTableItem";
-import axios from "axios";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableFooter,
+  TableCell,
+} from "@/Components/ui/table";
+import api from "@/lib/axios";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const Page = () => {
   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const fetchBlogs = useCallback(async () => {
     try {
-      const response = await axios.get("/api/blog");
-      setBlogs(response.data.blogs);
+      setLoading(true);
+      const response = await api.get("/blog");
+      setBlogs(response.data.blogs || []);
     } catch (error) {
-      toast.error("Blogs could not be fetched");
+      console.error("Fetch blogs error:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch blogs");
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   const deleteBlog = async (mongoId) => {
+    if (!confirm("Are you sure you want to delete this blog?")) {
+      return;
+    }
+
     try {
-      const response = await axios.delete("/api/blog", {
+      const response = await api.delete("/blog", {
         params: { id: mongoId },
       });
 
-      toast.success(response.data.message);
-      fetchBlogs();
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchBlogs();
+      }
     } catch (error) {
-      toast.error("Delete failed");
+      console.error("Delete blog error:", error);
+      toast.error(error.response?.data?.message || "Failed to delete blog");
     }
   };
 
   useEffect(() => {
     fetchBlogs();
   }, [fetchBlogs]);
- 
+
+  if (loading) {
+    return (
+      <div className="flex-1 pt-5 px-5 sm:pt-12 sm:pl-16">
+        <div className="flex justify-center items-center min-h-100">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-zinc-400">Loading blogs...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 pt-5 px-5 sm:pt-12 sm:pl-16">
-      <h1>All blogs</h1>
-      <div className="relative h-[80vh] max-w-212.5 overflow-x-auto mt-4 border border-gray-400 scrollbar-hide">
-        <table className="w-full text-sm text-gray-500">
-          <thead className="text-sm text-gray-700 text-left uppercase bg-gray-50">
-            <tr>
-              <th scope="col" className="hidden sm:block px-6 py-3">
-                Author name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Blog Title
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Date
-              </th>
-              <th scope="col" className="px-6 py-3">
+      <h1 className="text-2xl font-bold mb-6">All Blogs</h1>
+      <div className="overflow-x-auto border rounded-lg px-10">
+        <Table>
+          <TableCaption>
+            {blogs.length === 0 ? "No blogs found" : "All published blogs"}
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="hidden sm:table-cell font-bold text-base">
+                Author
+              </TableHead>
+              <TableHead className="font-bold text-base">Blog Title</TableHead>
+              <TableHead className="font-bold text-base">Date</TableHead>
+              <TableHead className="font-bold text-base text-right">
                 Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {blogs.map((blog, index) => {
-              return (
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {blogs.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center text-zinc-400">
+                  No blogs found. Create your first blog!
+                </TableCell>
+              </TableRow>
+            ) : (
+              blogs.map((blog) => (
                 <BlogTableItem
-                  key={index}
-                  mongoId={blog._id}
-                  title={blog.title}
-                  author={blog.author}
-                  authorImg={blog.authorImg}
-                  date={blog.date}
+                  key={blog._id}
+                  blog={blog}
                   deleteBlog={deleteBlog}
                 />
-              );
-            })}
-          </tbody>
-        </table>
+              ))
+            )}
+          </TableBody>
+          {blogs.length > 0 && (
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={4} className="font-bold text-base">
+                  Total Blogs: {blogs.length}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          )}
+        </Table>
       </div>
     </div>
   );

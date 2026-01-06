@@ -5,8 +5,8 @@ import { NextResponse } from "next/server";
 const LoadDB = async () => {
   await ConnectDB();
 };
-
 LoadDB();
+
 
 export async function POST(request) {
   try {
@@ -21,6 +21,15 @@ export async function POST(request) {
     }
 
  
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+
+   
     const existingEmail = await EmailModel.findOne({ email });
     if (existingEmail) {
       return NextResponse.json(
@@ -29,26 +38,73 @@ export async function POST(request) {
       );
     }
 
+
     await EmailModel.create({ email });
 
-    return NextResponse.json({
-      success: true,
-      message: "Email Subscribed",
-    });
-
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Email subscribed successfully!",
+      },
+      { status: 201 }
+    );
   } catch (error) {
+    console.error("Email subscription error:", error);
     return NextResponse.json(
       { success: false, message: "Something went wrong" },
       { status: 500 }
     );
   }
 }
+
+
 export async function GET(request) {
-  const emails = await EmailModel.find({});
-  return NextResponse.json({ emails });
+  try {
+    const emails = await EmailModel.find({}).sort({ date: -1 });
+    
+    return NextResponse.json({
+      success: true,
+      emails,
+    });
+  } catch (error) {
+    console.error("Get emails error:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to fetch emails" },
+      { status: 500 }
+    );
+  }
 }
+
+
 export async function DELETE(request) {
-  const id = await request.nextUrl.searchParams.get("id");
-  await EmailModel.findByIdAndDelete(id);
-  return NextResponse.json({ success: true, message: "Email deleted!" });
+  try {
+    const id = request.nextUrl.searchParams.get("id");
+    
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Email ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const deletedEmail = await EmailModel.findByIdAndDelete(id);
+    
+    if (!deletedEmail) {
+      return NextResponse.json(
+        { success: false, message: "Email not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Email deleted successfully!",
+    });
+  } catch (error) {
+    console.error("Delete email error:", error);
+    return NextResponse.json(
+      { success: false, message: "Delete failed" },
+      { status: 500 }
+    );
+  }
 }

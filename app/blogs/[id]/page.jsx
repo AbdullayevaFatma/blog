@@ -1,121 +1,150 @@
 "use client";
-import { assets} from "@/Assets/assets";
+
 import Footer from "@/Components/Footer";
-import axios from "axios";
+import api from "@/lib/axios"; 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, use } from "react";
+import { use, useEffect, useState } from "react";
+import { Button } from "@/Components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const Page = ({ params }) => {
   const { id } = use(params);
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true)
-const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
- const fetchBlogData = async () => {
-  try {
-    const response = await axios.get("/api/blog", {params: {id: id}})
-    
-    if (!response.data.blog) {
-      setError('Blog bulunamadı')
-      return
+  const fetchBlogData = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/blog", { params: { id: id } });
+
+      if (!response.data.blog) {
+        setError("Blog not found");
+        return;
+      }
+
+      setData(response.data.blog);
+    } catch (err) {
+      
+      setError(err.response?.data?.message || "Blog loading error");
+    } finally {
+      setLoading(false);
     }
-    
-    setData(response.data.blog)
-  } catch (err) {
-    console.error('Blog yükleme hatası:', err)
-    setError('Blog yüklenirken hata oluştu')
-  } finally {
-    setLoading(false)
-  }
-}
+  };
 
   useEffect(() => {
     fetchBlogData();
-  }, []);
+  }, [id]);
 
   if (loading) {
-  return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-        <p>Blog loading...</p>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-600 border-t-transparent mx-auto mb-4"></div>
+          <p className="text-zinc-400 text-lg">Blog loading...</p>
+        </div>
       </div>
-    </div>
-  )
-}
-if (error) {
-  return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="text-center">
-        <p className="text-red-600 text-xl mb-4">{error}</p>
-        <Link href="/" className="bg-black text-white py-2 px-6 rounded">
-          Ana Sayfaya Dön
-        </Link>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center p-8 bg-zinc-900 rounded-xl border border-zinc-800">
+          <p className="text-red-400 text-xl mb-6">{error}</p>
+          <Link href="/">
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
       </div>
-    </div>
-  )
-}
+    );
+  }
 
   return data ? (
-    <>
-      <div className="bg-gray-200 py-5 px-5 md:px-12 lg:px-28">
-        <div className="flex justify-between items-center">
+    <div className="flex flex-col min-h-screen">
+      {/* Navbar */}
+      <div className="relative bg-emerald-950 py-5 px-5 md:px-12 lg:px-28 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent)]" />
+        <div className="relative z-10 flex justify-between items-center">
           <Link href="/">
-          <Image
-            src={assets.logo}
-            alt="logo"
-            width={180}
-            className="w-32.5 sm:w-auto"
-          />
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-wide text-emerald-50 cursor-pointer hover:text-emerald-100 transition-colors duration-300">
+              blog<span className="text-emerald-400">.</span>
+            </h1>
           </Link>
-          <button className="flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-black shadow-[-7px_7px_0px_#000000]">
-            Get started <Image src={assets.arrow} alt="arrow icon" width={24} />{" "}
-          </button>
-        </div>
-        <div className="text-center my-24">
-          <h1 className="text-2xl sm:text-5xl font-semibold max-w-175 mx-auto">
-            {data.title}
-          </h1>
-          <Image
-            className="mx-auto mt-6 border border-white rounded-full"
-            src={data?.authorImg}
-            width={60}
-            height={60}
-            alt="author image"
-          />
-          <p className="mt-1 pb-2 text-lg max-w-185 mx-auto">{data.author}</p>
+          <Link href="/">
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-5 shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/40 transition-all duration-300">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Button>
+          </Link>
         </div>
       </div>
-
-      <div className="mx-5 max-w-200 md:mx-auto -mt-25 mb-10">
-        <Image
-          className="border-4 border-white"
-          src={data.image}
-          width={1280}
-          height={720}
-          alt="image"
-        />
-        
-     <div className="blog-content" dangerouslySetInnerHTML={{__html:data.description}}></div>
-       
-      
-        <div className="my-24">
-          <p className="text-black font-semibold my-4">
-            Share this article on social media
-          </p>
-          <div className="flex">
-            <Image src={assets.facebook_icon} width={50} alt="facebook" />
-            <Image src={assets.twitter_icon} width={50} alt="twitter" />
-            <Image src={assets.googleplus_icon} width={50} alt="google" />
+      <main className="flex-1">
+        <div className="py-12 px-5 md:px-12 lg:px-28">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-6">
+              <span className="inline-block px-6 py-2 bg-emerald-600 shadow-lg shadow-emerald-600/20 text-white text-lg font-semibold rounded-full hover:bg-emerald-700 hover:shadow-emerald-600/40 transition-all duration-300">
+                {data.category}
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-5xl font-bold text-zinc-50 mb-6 leading-tight">
+              {data.title}
+            </h1>
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <Image
+                className="rounded-full border-2 border-emerald-600"
+                src={data.authorImg}
+                width={60}
+                height={60}
+                alt="author image"
+              />
+              <div>
+                <p className="text-zinc-100 font-semibold text-lg">
+                  {data.author}
+                </p>
+                <p className="text-zinc-400 text-sm">
+                  {new Date(data.createdAt || data.date).toLocaleDateString(
+                    "tr-TR",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto max-w-4xl mb-12">
+              <div className="relative w-full aspect-video">
+                <Image
+                  src={data.image}
+                  alt="blog image"
+                  fill
+                  className="object-cover rounded-2xl border-2 border-zinc-800 shadow-xl"
+                  priority
+                />
+              </div>
+            </div>
+            <article
+              className="blog-content text-left prose prose-invert prose-emerald prose-lg max-w-none mb-12
+                prose-headings:text-zinc-50 prose-headings:font-bold
+                prose-p:text-zinc-300 prose-p:leading-relaxed
+                prose-a:text-emerald-500 prose-a:no-underline hover:prose-a:text-emerald-400
+                prose-strong:text-zinc-100
+                prose-code:text-emerald-400 prose-code:bg-zinc-900 prose-code:px-2 prose-code:py-1 prose-code:rounded
+                prose-img:rounded-xl prose-img:border-2 prose-img:border-zinc-800"
+              dangerouslySetInnerHTML={{ __html: data.description }}
+            />
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
-    </>
-  ) : (
-    <></>
-  );
+    </div>
+  ) : null;
 };
 
 export default Page;

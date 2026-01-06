@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 const Page = () => {
-  redirect("/admin/addProduct");
+  redirect("/admin/addBlog");
 };
 
 export default Page;
