@@ -6,12 +6,9 @@ export async function POST() {
       { success: true, message: "Logged out successfully" },
       { status: 200 }
     );
-
     response.cookies.delete("auth_token");
-
     return response;
   } catch (error) {
-    console.error("Logout error:", error);
     return NextResponse.json(
       { success: false, message: "Server error" },
       { status: 500 }

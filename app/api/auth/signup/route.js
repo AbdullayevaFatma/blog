@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ConnectDB } from "@/lib/config/db";
-import UserModel from "@/lib/models/UserModel";
+import UserModel from "@/models/UserModel";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -70,7 +70,6 @@ export async function POST(req) {
       { status: 201 },
     );
 
-  
     response.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

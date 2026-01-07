@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import UserModel from "@/lib/models/UserModel";
+import UserModel from "@/models/UserModel";
 import { ConnectDB } from "@/lib/config/db";
 
 const JWT_SECRET = process.env.JWT_SECRET;

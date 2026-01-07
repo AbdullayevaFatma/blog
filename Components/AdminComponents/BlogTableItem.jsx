@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import { TableRow, TableCell } from "../ui/table";
 import { Button } from "../ui/button";
+import profile from "@/public/profile_icon.jpg"
 
 const BlogTableItem = ({ blog, deleteBlog }) => {
   const { authorImg, title, date, author, _id: mongoId } = blog;
@@ -15,7 +16,7 @@ const BlogTableItem = ({ blog, deleteBlog }) => {
       <TableCell className="hidden sm:table-cell">
         <div className="flex items-center gap-3">
           <Image
-            src={authorImg || assets.profile_icon}
+            src={authorImg || profile}
             alt="author image"
             width={40}
             height={40}

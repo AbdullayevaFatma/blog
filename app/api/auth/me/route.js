@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { verifyToken } from "@/lib/utils/auth";
 import { ConnectDB } from "@/lib/config/db";
-import UserModel from "@/lib/models/UserModel";
+import UserModel from "@/models/UserModel";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -11,38 +11,22 @@ export async function GET(req) {
 
     const token = req.cookies.get("auth_token")?.value;
 
-  
-
     if (!token) {
-      return NextResponse.json(
-        { success: false, user: null },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, user: null }, { status: 401 });
     }
 
     let decoded;
     try {
-      decoded = jwt.verify(token, JWT_SECRET);
-     
+      decoded = verifyToken(token);
     } catch (error) {
-     
-      return NextResponse.json(
-        { success: false, user: null },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, user: null }, { status: 401 });
     }
 
     const user = await UserModel.findById(decoded.id);
 
     if (!user) {
-     
-      return NextResponse.json(
-        { success: false, user: null },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, user: null }, { status: 404 });
     }
-
-
 
     return NextResponse.json({
       success: true,
@@ -55,10 +39,6 @@ export async function GET(req) {
       },
     });
   } catch (error) {
-  
-    return NextResponse.json(
-      { success: false, user: null },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, user: null }, { status: 500 });
   }
 }

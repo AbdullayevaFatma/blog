@@ -3,8 +3,6 @@
 
 import Sidebar from "@/Components/AdminComponents/Sidebar";
 import Image from "next/image";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -15,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
+import profile from "@/public/profile_icon.jpg"
 
 
 
@@ -82,7 +81,6 @@ export default function AdminLayout({ children }) {
   return (
     <>
       <div className="flex">
-        <ToastContainer theme="dark" />
         <Sidebar />
         <div className="flex flex-col w-full">
           <div className="flex items-center justify-between w-full py-12 max-h-15 px-14">
@@ -92,7 +90,7 @@ export default function AdminLayout({ children }) {
                 <button className="flex items-center gap-3 focus:outline-none hover:opacity-80 transition-opacity">
                   <span className="text-sm text-zinc-300 hidden sm:block">{user.name}</span>
                   <Image
-                    src={user.avatar || "/profile_icon.png"}
+                    src={user.avatar || profile}
                     width={42}
                     height={42}
                     alt="profile icon"

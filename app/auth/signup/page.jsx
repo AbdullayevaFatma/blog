@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import api from "@/lib/axios";
+import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ import Link from "next/link";
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export default function SignupPage() {
@@ -56,7 +56,6 @@ export default function SignupPage() {
         toast.error(res.data.message || "Signup failed");
       }
     } catch (err) {
-      console.error("Signup error:", err);
       toast.error(
         err.response?.data?.message || "Signup failed. Please try again.",
       );
@@ -64,6 +63,7 @@ export default function SignupPage() {
       setIsSubmitting(false);
     }
   };
+
   useEffect(() => {
     if (!loading && user) {
       if (user.role === "admin") {
@@ -73,6 +73,7 @@ export default function SignupPage() {
       }
     }
   }, [user, loading, router]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -144,10 +145,9 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
-
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full bg-linear-to-r from-emerald-400 to-emerald-700"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Creating account..." : "Sign Up"}
@@ -157,7 +157,7 @@ export default function SignupPage() {
               Already have an account?{" "}
               <Link
                 href="/auth/signin"
-                className="text-emerald-500 hover:underline font-medium"
+                className="text-emerald-400 hover:underline font-medium"
               >
                 Sign in
               </Link>

@@ -1,11 +1,10 @@
 "use client";
 
-
-import api from "@/lib/axios";
+import api from "@/lib/api";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import upload_area from "@/public/upload_area.png"
+import upload_area from "@/public/upload_area.png";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Textarea } from "@/Components/ui/textarea";
@@ -48,7 +47,6 @@ const Page = () => {
     formData.append("description", data.description);
     formData.append("category", data.category);
     formData.append("image", image);
-   
 
     try {
       const response = await api.post("/blog", formData, {
@@ -59,8 +57,7 @@ const Page = () => {
 
       if (response.data.success) {
         toast.success(response.data.message);
-        
-      
+
         setImage(null);
         setData({
           title: "",
@@ -73,7 +70,8 @@ const Page = () => {
     } catch (error) {
       console.error("Blog add error:", error);
       toast.error(
-        error.response?.data?.message || "Failed to add blog. Please try again."
+        error.response?.data?.message ||
+          "Failed to add blog. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -144,9 +142,10 @@ const Page = () => {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Startup">Startup</SelectItem>
                   <SelectItem value="Technology">Technology</SelectItem>
-                  <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+                  <SelectItem value="AI">AI</SelectItem>
+                  <SelectItem value="Startups">Startups</SelectItem>
+                  <SelectItem value="Events">Events</SelectItem>
                 </SelectContent>
               </Select>
             </div>

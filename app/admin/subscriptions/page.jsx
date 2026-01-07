@@ -10,7 +10,7 @@ import {
   TableRow,
   TableFooter,
 } from "@/Components/ui/table";
-import api from "@/lib/axios";
+import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/Components/ui/button";

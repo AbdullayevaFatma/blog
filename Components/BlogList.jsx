@@ -2,24 +2,22 @@
 
 import BlogItem from "./BlogItem";
 import { useEffect, useState } from "react";
-import api from "@/lib/axios";
+import api from "@/lib/api";
 
 const BlogList = () => {
   const [menu, setMenu] = useState("All");
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const categories = ["All", "Technology", "Startup", "Lifestyle"];
+  const categories = ["All", "Technology", "AI", "Startups", "Events"];
 
   const fetchBlogs = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const response = await api.get("/blog");
       setBlogs(response.data.blogs || []);
     } catch (error) {
-      console.error(error);
       setError(
         "An error occurred while loading the blogs. Please refresh the page.",
       );
@@ -69,7 +67,6 @@ const BlogList = () => {
 
   return (
     <div className="px-5 md:px-12 lg:px-28">
-      {/* Category Filter Buttons */}
       <div className="flex flex-wrap justify-center gap-3 my-10">
         {categories.map((cat) => (
           <button
@@ -85,7 +82,7 @@ const BlogList = () => {
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 justify-items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-16 justify-items-center">
         {blogs
           .filter((item) => (menu === "All" ? true : item.category === menu))
           .map((item) => (

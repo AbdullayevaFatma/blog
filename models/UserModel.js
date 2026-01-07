@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { minLength } from "zod";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -20,6 +21,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       select: false,
+      minLength: 8,
     },
 
     role: {
@@ -30,7 +32,7 @@ const UserSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
-      default: "/profile_icon.png",
+      default: "/profile_icon.jpg",
     },
   },
   { timestamps: true }

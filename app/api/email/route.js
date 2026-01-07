@@ -1,12 +1,11 @@
 import { ConnectDB } from "@/lib/config/db";
-import EmailModel from "@/lib/models/EmailModel";
+import EmailModel from "@/models/EmailModel";
 import { NextResponse } from "next/server";
 
 const LoadDB = async () => {
   await ConnectDB();
 };
 LoadDB();
-
 
 export async function POST(request) {
   try {
@@ -16,28 +15,25 @@ export async function POST(request) {
     if (!email) {
       return NextResponse.json(
         { success: false, message: "Email is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
- 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { success: false, message: "Invalid email format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-   
     const existingEmail = await EmailModel.findOne({ email });
     if (existingEmail) {
       return NextResponse.json(
         { success: false, message: "Email already subscribed" },
-        { status: 409 }
+        { status: 409 },
       );
     }
-
 
     await EmailModel.create({ email });
 
@@ -46,22 +42,21 @@ export async function POST(request) {
         success: true,
         message: "Email subscribed successfully!",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Email subscription error:", error);
     return NextResponse.json(
       { success: false, message: "Something went wrong" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-
 export async function GET(request) {
   try {
     const emails = await EmailModel.find({}).sort({ date: -1 });
-    
+
     return NextResponse.json({
       success: true,
       emails,
@@ -70,29 +65,28 @@ export async function GET(request) {
     console.error("Get emails error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch emails" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-
 export async function DELETE(request) {
   try {
     const id = request.nextUrl.searchParams.get("id");
-    
+
     if (!id) {
       return NextResponse.json(
         { success: false, message: "Email ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const deletedEmail = await EmailModel.findByIdAndDelete(id);
-    
+
     if (!deletedEmail) {
       return NextResponse.json(
         { success: false, message: "Email not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -104,7 +98,7 @@ export async function DELETE(request) {
     console.error("Delete email error:", error);
     return NextResponse.json(
       { success: false, message: "Delete failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import api from "@/lib/axios";
+import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,8 +22,9 @@ import Link from "next/link";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
+
 
 export default function SigninPage() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function SigninPage() {
 
   const onSubmit = async (values) => {
     if (isSubmitting) return;
-    
+
     setIsSubmitting(true);
 
     try {
@@ -49,23 +50,24 @@ export default function SigninPage() {
       if (res.data.success) {
         toast.success(res.data.message || "Welcome back!");
         await refetchUser();
-        const redirectPath = res.data.user.role === "admin" ? "/admin/addBlog" : "/user";
+        const redirectPath =
+          res.data.user.role === "admin" ? "/admin/addBlog" : "/user";
         router.push(redirectPath);
       } else {
         toast.error(res.data.message || "Login failed");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed. Please try again.");
+      toast.error(
+        err.response?.data?.message || "Login failed. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  
   useEffect(() => {
-   
     if (!loading && user) {
-      const redirectPath = user.role === "admin" ? "/admin/addBlog" : "/";
+      const redirectPath = user.role === "admin" ? "/admin/addBlog" : "/user";
       router.replace(redirectPath);
     }
   }, [user, loading, router]);
@@ -81,7 +83,6 @@ export default function SigninPage() {
     );
   }
 
-  
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-zinc-900 p-8 rounded-xl border border-zinc-800">
@@ -90,16 +91,16 @@ export default function SigninPage() {
         </h1>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input 
-                      placeholder="Email" 
-                      {...field} 
+                    <Input
+                      placeholder="Email"
+                      {...field}
                       disabled={isSubmitting}
                     />
                   </FormControl>
@@ -114,9 +115,9 @@ export default function SigninPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="Password" 
+                    <Input
+                      type="password"
+                      placeholder="Password"
                       {...field}
                       disabled={isSubmitting}
                     />
@@ -128,7 +129,7 @@ export default function SigninPage() {
 
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full bg-linear-to-r from-emerald-500 to-emerald-700"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Signing in..." : "Sign In"}
@@ -138,7 +139,7 @@ export default function SigninPage() {
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/signup"
-                className="text-emerald-500 hover:underline font-medium"
+                className="text-emerald-400 hover:underline font-medium"
               >
                 Sign up
               </Link>

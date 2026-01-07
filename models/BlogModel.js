@@ -19,7 +19,7 @@ const BlogSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ["Technology", "Startup", "Lifestyle"],
+      enum: ["Technology", "AI", "Startups","Events"],
     },
   
     author: {
@@ -28,7 +28,7 @@ const BlogSchema = new mongoose.Schema(
     },
     authorImg: {
       type: String,
-      default: "/profile_icon.png",
+      default: "/profile_icon.jpg",
     },
     
     userId: {

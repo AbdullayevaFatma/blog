@@ -1,12 +1,11 @@
 "use client";
 
 import Footer from "@/Components/Footer";
-import api from "@/lib/axios"; 
+import api from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { Button } from "@/Components/ui/button";
-import { ArrowLeft } from "lucide-react";
 
 const Page = ({ params }) => {
   const { id } = use(params);
@@ -23,10 +22,8 @@ const Page = ({ params }) => {
         setError("Blog not found");
         return;
       }
-
       setData(response.data.blog);
     } catch (err) {
-      
       setError(err.response?.data?.message || "Blog loading error");
     } finally {
       setLoading(false);
@@ -54,8 +51,7 @@ const Page = ({ params }) => {
         <div className="text-center p-8 bg-zinc-900 rounded-xl border border-zinc-800">
           <p className="text-red-400 text-xl mb-6">{error}</p>
           <Link href="/">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button className="bg-linear-to-r from-emerald-400 to-emerald-700">
               Back to Home
             </Button>
           </Link>
@@ -66,7 +62,6 @@ const Page = ({ params }) => {
 
   return data ? (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
       <div className="relative bg-emerald-950 py-5 px-5 md:px-12 lg:px-28 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent)]" />
         <div className="relative z-10 flex justify-between items-center">
@@ -76,8 +71,7 @@ const Page = ({ params }) => {
             </h1>
           </Link>
           <Link href="/">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-5 shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/40 transition-all duration-300">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button className="bg-linear-to-r from-emerald-400 to-emerald-700 font-semibold px-6 py-5">
               Back to Home
             </Button>
           </Link>
@@ -85,9 +79,9 @@ const Page = ({ params }) => {
       </div>
       <main className="flex-1">
         <div className="py-12 px-5 md:px-12 lg:px-28">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center">
             <div className="mb-6">
-              <span className="inline-block px-6 py-2 bg-emerald-600 shadow-lg shadow-emerald-600/20 text-white text-lg font-semibold rounded-full hover:bg-emerald-700 hover:shadow-emerald-600/40 transition-all duration-300">
+              <span className="inline-block px-6 py-2 text-lg font-semibold rounded-full bg-linear-to-r from-emerald-400 to-emerald-700">
                 {data.category}
               </span>
             </div>
@@ -108,17 +102,17 @@ const Page = ({ params }) => {
                 </p>
                 <p className="text-zinc-400 text-sm">
                   {new Date(data.createdAt || data.date).toLocaleDateString(
-                    "tr-TR",
+                    "en-US",
                     {
                       year: "numeric",
-                      month: "long",
+                      month: "short",
                       day: "numeric",
-                    }
+                    },
                   )}
                 </p>
               </div>
             </div>
-            <div className="mx-auto max-w-4xl mb-12">
+            <div className="mx-auto max-w-3xl mb-12">
               <div className="relative w-full aspect-video">
                 <Image
                   src={data.image}

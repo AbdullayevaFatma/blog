@@ -18,7 +18,8 @@ import {
   DropdownMenuSeparator,
 } from "@/Components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import api from "@/lib/axios";
+import api from "@/lib/api";
+import profile from "@/public/profile_icon.jpg";
 
 const emailFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -39,7 +40,6 @@ const Header = () => {
     try {
       const formData = new FormData();
       formData.append("email", values.email);
-
       const response = await api.post("/email", formData);
 
       if (response.data.success) {
@@ -66,7 +66,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="relative bg-emerald-950 py-5 px-5 md:px-12 lg:px-28 overflow-hidden">
+      <div className="relative bg-emerald-950 py-6 px-5 md:px-12 lg:px-28 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent)]" />
         <div className="relative z-10 flex justify-between items-center">
           <Link href="/">
@@ -76,23 +76,23 @@ const Header = () => {
           </Link>
           <div className="flex items-center gap-4">
             {!loading && !user && (
-              <Button onClick={() => router.push("/auth/signup")}>
-                Start Blogging
+              <Button asChild>
+                <Link href="/auth/signup">Start Blogging</Link>
               </Button>
             )}
             {!loading && user && (
               <>
                 <Button
-                  onClick={() => router.push("/user")}
+                 asChild
                   className="bg-linear-to-r from-emerald-400 to-emerald-700"
                 >
-                  Dashboard
+                 <Link href="/user">Dashboard</Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="focus:outline-none rounded-full">
                       <Image
-                        src={user.avatar || "/profile_icon.png"}
+                        src={user.avatar || profile}
                         width={42}
                         height={42}
                         className="rounded-full cursor-pointer border-2 border-emerald-600 hover:border-emerald-500 transition-colors"
@@ -102,7 +102,7 @@ const Header = () => {
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end" className="w-56">
-                    <div className="px-2 py-3">
+                    <div className="px-2 py-3 space-y-2">
                       <p className="text-sm font-semibold text-zinc-100">
                         {user.name}
                       </p>
@@ -130,7 +130,7 @@ const Header = () => {
 
                     <DropdownMenuItem
                       onClick={handleLogout}
-                      className="cursor-pointer text-red-400 focus:text-red-300 focus:bg-red-950"
+                      className="cursor-pointer text-red-400 focus:text-red-300 focus:bg-red-800"
                     >
                       Logout
                     </DropdownMenuItem>
@@ -143,12 +143,12 @@ const Header = () => {
       </div>
 
       <div className="text-center my-20 px-5 md:px-12 lg:px-28">
-        <div className="gradient-blur-dark-vibrant rounded-2xl p-8 sm:p-12 border border-zinc-800/50 backdrop-blur-sm">
-          <h1 className="text-3xl sm:text-5xl font-bold mb-4 bg-linear-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+        <div className="gradient-blur-dark-vibrant rounded-2xl p-8 sm:p-12 border border-zinc-600/50 backdrop-blur-sm">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4 bg-linear-to-r from-white to-emerald-100 bg-clip-text text-transparent">
             Latest Blogs
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-sm sm:text-base text-zinc-400">
-            Discover amazing stories and insights from our community of writers.
+            Explore insights and updates on AI,technology,startups and events from our vibrant community of writers.
           </p>
           <div className="mt-8">
             <Form {...form}>

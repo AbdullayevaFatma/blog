@@ -8,7 +8,7 @@ const BlogItem = ({ title, description, category, image, id }) => {
       className="
         group
         w-full
-        max-w-sm
+        max-w-md
         bg-zinc-900
         rounded-xl
         overflow-hidden
@@ -26,13 +26,13 @@ const BlogItem = ({ title, description, category, image, id }) => {
             alt="blog image"
             width={400}
             height={400}
-            className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-64 object-cover  transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-emerald-800/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-t from-emerald-800/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
       </Link>
 
-      <div className="p-5">
+      <div className="py-8 px-4">
         <span className="inline-block px-3 py-2 bg-linear-to-r from-emerald-400 to-emerald-700 text-white text-sm font-medium rounded-full mb-3">
           {category}
         </span>

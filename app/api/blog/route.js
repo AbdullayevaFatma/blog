@@ -1,5 +1,5 @@
 import { ConnectDB } from "@/lib/config/db";
-import BlogModel from "@/lib/models/BlogModel";
+import BlogModel from "@/models/BlogModel";
 import { writeFile } from "fs/promises";
 import fs from "fs";
 import jwt from "jsonwebtoken";
@@ -123,7 +123,7 @@ export async function POST(request) {
 
    
     const authorImgInput = formData.get("authorImg");
-    let authorImgUrl = decoded.avatar || "/profile_icon.png";
+    let authorImgUrl = decoded.avatar || "/profile_icon.jpg";
 
     if (authorImgInput && typeof authorImgInput === "object" && authorImgInput.arrayBuffer) {
       const authorImgBuffer = Buffer.from(await authorImgInput.arrayBuffer());
@@ -178,7 +178,7 @@ export async function DELETE(request) {
       );
     }
 
-  
+   
     let decoded;
     try {
       decoded = jwt.verify(token, JWT_SECRET);
@@ -206,7 +206,7 @@ export async function DELETE(request) {
       );
     }
 
-   
+    // 🔥 SAHİPLİK VEYA ADMIN KONTROLÜ
     const isOwner = blog.userId && blog.userId.toString() === decoded.id;
     const isAdmin = decoded.role === "admin";
 
@@ -217,14 +217,14 @@ export async function DELETE(request) {
       );
     }
 
-   
+    // Image dosyasını sil
     try {
       fs.unlinkSync(`./public${blog.image}`);
     } catch (err) {
       console.log("Image delete warning:", err.message);
     }
 
-  
+    // Blog'u sil
     await BlogModel.findByIdAndDelete(id);
 
     return NextResponse.json({
