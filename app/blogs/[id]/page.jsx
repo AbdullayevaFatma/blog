@@ -1,11 +1,11 @@
 "use client";
 
-import Footer from "@/Components/Footer";
+import Footer from "@/components/Footer";
 import api from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 
 const Page = ({ params }) => {
   const { id } = use(params);

@@ -2,7 +2,6 @@ import { ConnectDB } from "@/lib/config/db";
 import BlogModel from "@/models/BlogModel";
 import { writeFile } from "fs/promises";
 import fs from "fs";
-import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/utils/auth";
 
@@ -121,7 +120,7 @@ export async function POST(request) {
   
     let decoded;
     try {
-      decoded = jwt.verify(token, JWT_SECRET);
+      decoded = verifyToken(token)
     } catch (error) {
       return NextResponse.json(
         { success: false, message: "Invalid token. Please login again." },

@@ -1,15 +1,14 @@
 import Link from "next/link";
-import React from "react";
+
 
 export const metadata = {
   title: "Dashboard",
   description: "Dashboard with blogs and profile info",
 };
 
-export default function UserRootLayout({ children }) {
+export default function DashboardLayout({ children }) {
   return (
-    <html lang="en">
-      <body className="relative flex flex-col min-h-screen bg-zinc-900 antialiased">
+      <div className="relative flex flex-col min-h-screen bg-zinc-900 antialiased">
          <div className="relative bg-emerald-950 py-6 px-5 md:px-12 lg:px-28">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent)]" />
           <div className="relative z-10 flex items-center">
@@ -37,7 +36,7 @@ export default function UserRootLayout({ children }) {
           />
         </div>
         <div className="relative z-10">{children}</div>
-      </body>
-    </html>
+      </div>
+    
   );
 }

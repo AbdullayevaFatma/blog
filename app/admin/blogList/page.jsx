@@ -1,6 +1,6 @@
 "use client";
 
-import BlogTableItem from "@/Components/AdminComponents/BlogTableItem";
+import BlogTableItem from "@/components/adminComponents/BlogTableItem";
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableRow,
   TableFooter,
   TableCell,
-} from "@/Components/ui/table";
+} from "@/components/ui/table";
 import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -92,7 +92,10 @@ const Page = () => {
           <TableBody>
             {blogs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4}  className="text-center font-semibold  text-zinc-400">
+                <TableCell
+                  colSpan={4}
+                  className="text-center font-semibold  text-zinc-400"
+                >
                   No blogs found. Create your first blog!
                 </TableCell>
               </TableRow>

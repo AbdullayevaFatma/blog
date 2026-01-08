@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { Input } from "../Components/ui/input";
-import { Button } from "../Components/ui/button";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/Components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import profile from "@/public/profile_icon.jpg";
@@ -83,10 +83,10 @@ const Header = () => {
             {!loading && user && (
               <>
                 <Button
-                 asChild
+                  asChild
                   className="bg-linear-to-r from-emerald-400 to-emerald-700"
                 >
-                 <Link href="/user">Dashboard</Link>
+                  <Link href="/user">Dashboard</Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -148,7 +148,8 @@ const Header = () => {
             Latest Blogs
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-sm sm:text-base text-zinc-400">
-            Explore insights and updates on AI,technology,startups and events from our vibrant community of writers.
+            Explore insights and updates on AI,technology,startups and events
+            from our vibrant community of writers.
           </p>
           <div className="mt-8">
             <Form {...form}>

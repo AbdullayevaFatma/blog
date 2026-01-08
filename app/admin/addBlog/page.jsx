@@ -5,18 +5,18 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import upload_area from "@/public/upload_area.png";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
-import { Textarea } from "@/Components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/Components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Label } from "@/Components/ui/label";
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 const Page = () => {
   const [image, setImage] = useState(null);

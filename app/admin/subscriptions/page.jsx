@@ -9,11 +9,11 @@ import {
   TableHeader,
   TableRow,
   TableFooter,
-} from "@/Components/ui/table";
+} from "@/components/ui/table";
 import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Button } from "@/Components/ui/button";
+import { Button } from "@/components/ui/button";
 
 const Page = () => {
   const [emails, setEmails] = useState([]);
@@ -78,9 +78,7 @@ const Page = () => {
       <div className="overflow-x-auto border rounded-lg py-4">
         <Table>
           <TableCaption>
-            {emails.length === 0
-              ? ""
-              : "All email subscriptions"}
+            {emails.length === 0 ? "" : "All email subscriptions"}
           </TableCaption>
           <TableHeader>
             <TableRow>

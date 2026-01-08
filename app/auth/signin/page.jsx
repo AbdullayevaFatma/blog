@@ -15,16 +15,15 @@ import {
   FormItem,
   FormControl,
   FormMessage,
-} from "@/Components/ui/form";
-import { Input } from "@/Components/ui/input";
-import { Button } from "@/Components/ui/button";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
-
 
 export default function SigninPage() {
   const router = useRouter();

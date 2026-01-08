@@ -1,7 +1,6 @@
 "use client";
 
-
-import Sidebar from "@/Components/AdminComponents/Sidebar";
+import Sidebar from "@/components/adminComponents/Sidebar";
 import Image from "next/image";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -12,34 +11,24 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
-import profile from "@/public/profile_icon.jpg"
-
-
-
+} from "@/components/ui/dropdown-menu";
+import profile from "@/public/profile_icon.jpg";
 
 export default function AdminLayout({ children }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
 
-
-
- 
   useEffect(() => {
     if (!loading) {
       if (!user) {
-      
         router.replace("/auth/signin");
         return;
       }
 
       if (user.role !== "admin") {
-       
         router.replace("/");
         return;
       }
-
-     
     }
   }, [user, loading, router]);
 
@@ -56,7 +45,6 @@ export default function AdminLayout({ children }) {
     router.push("/");
   };
 
- 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-950">
@@ -68,7 +56,6 @@ export default function AdminLayout({ children }) {
     );
   }
 
-
   if (!user || user.role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-950">
@@ -77,7 +64,6 @@ export default function AdminLayout({ children }) {
     );
   }
 
- 
   return (
     <>
       <div className="flex">
@@ -85,10 +71,12 @@ export default function AdminLayout({ children }) {
         <div className="flex flex-col w-full">
           <div className="flex items-center justify-between w-full py-12 max-h-15 px-14">
             <h3 className="font-medium">Admin Panel</h3>
-          <DropdownMenu>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 focus:outline-none hover:opacity-80 transition-opacity">
-                  <span className="text-sm text-zinc-300 hidden sm:block">{user.name}</span>
+                  <span className="text-sm text-zinc-300 hidden sm:block">
+                    {user.name}
+                  </span>
                   <Image
                     src={user.avatar || profile}
                     width={42}
@@ -104,34 +92,32 @@ export default function AdminLayout({ children }) {
                   <p className="text-sm font-semibold text-zinc-100">
                     {user.name}
                   </p>
-                  <p className="text-xs text-zinc-400 truncate">
-                    {user.email}
-                  </p>
+                  <p className="text-xs text-zinc-400 truncate">{user.email}</p>
                   <p className="text-xs text-emerald-500 mt-1 font-medium">
                     Admin
                   </p>
                 </div>
-                <DropdownMenuSeparator/>
-                <DropdownMenuItem 
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
                   onClick={handleHomePage}
                   className="cursor-pointer outline-none focus:bg-emerald-800 focus:text-white transition-all duration-300"
                 >
-                   Home Page
+                  Home Page
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={handleUserDashboard}
                   className="cursor-pointer outline-none focus:bg-emerald-800 focus:text-white transition-all duration-300"
                 >
-                   User Dashboard
+                  User Dashboard
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={handleLogout}
                   className="cursor-pointer text-red-400 focus:text-red-300 focus:bg-red-950 outline-none transition-all duration-300"
                 >
-                   Logout
+                  Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -142,4 +128,3 @@ export default function AdminLayout({ children }) {
     </>
   );
 }
-

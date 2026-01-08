@@ -3,18 +3,18 @@
 import { useAuth } from "@/lib/context/AuthContext";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
-import { Textarea } from "@/Components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/Components/ui/select";
-import { Label } from "@/Components/ui/label";
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -22,7 +22,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/Components/ui/form";
+} from "@/components/ui/form";
 import { User, Mail, Shield, Camera, Plus, Trash2, Edit } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/lib/api.js";
@@ -40,7 +40,7 @@ const blogSchema = z.object({
   category: z.enum(["Technology", "AI", "Startups", "Events"]),
 });
 
-export default function UserPage() {
+export default function DashboardPage() {
   const { user, loading, logout, refetchUser } = useAuth();
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -269,7 +269,7 @@ export default function UserPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex flex-col items-center">
-                  <div className="relative group w-[100px] h-[100px]">
+                  <div className="relative group w-25 h-25">
                     <Image
                       src={avatarPreview || user.avatar || profile}
                       fill
