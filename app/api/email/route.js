@@ -1,4 +1,5 @@
 import { ConnectDB } from "@/lib/config/db";
+import { verifyToken } from "@/lib/utils/auth";
 import EmailModel from "@/models/EmailModel";
 import { NextResponse } from "next/server";
 
@@ -55,6 +56,31 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
+    const token = request.cookies.get("auth_token")?.value;
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    let decoded;
+    try {
+      decoded = verifyToken(token); 
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, message: "Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    if (decoded.role !== "admin") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden. Admins only." },
+        { status: 403 }
+      );
+    }
+
     const emails = await EmailModel.find({}).sort({ date: -1 });
 
     return NextResponse.json({
@@ -65,19 +91,46 @@ export async function GET(request) {
     console.error("Get emails error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch emails" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
+
 export async function DELETE(request) {
   try {
+    const token = request.cookies.get("auth_token")?.value;
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    let decoded;
+    try {
+      decoded = verifyToken(token);
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, message: "Invalid token" },
+        { status: 401 }
+      );
+    }
+
+ 
+    if (decoded.role !== "admin") {
+      return NextResponse.json(
+        { success: false, message: "Forbidden. Admins only." },
+        { status: 403 }
+      );
+    }
+
     const id = request.nextUrl.searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
         { success: false, message: "Email ID is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -86,7 +139,7 @@ export async function DELETE(request) {
     if (!deletedEmail) {
       return NextResponse.json(
         { success: false, message: "Email not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
@@ -98,7 +151,7 @@ export async function DELETE(request) {
     console.error("Delete email error:", error);
     return NextResponse.json(
       { success: false, message: "Delete failed" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

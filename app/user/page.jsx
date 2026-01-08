@@ -16,18 +16,29 @@ import {
 } from "@/Components/ui/select";
 import { Label } from "@/Components/ui/label";
 import {
-  User,
-  Mail,
-  Shield,
-  Camera,
-  Plus,
-  Trash2,
-  Edit,
-} from "lucide-react";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/Components/ui/form";
+import { User, Mail, Shield, Camera, Plus, Trash2, Edit } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/lib/api.js";
 import upload_area from "@/public/upload_area.png";
 import profile from "@/public/profile_icon.jpg";
+import { useRouter } from "next/navigation";
+
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const blogSchema = z.object({
+  title: z.string().min(3, "Title is required"),
+  description: z.string().min(10, "Content is required"),
+  category: z.enum(["Technology", "AI", "Startups", "Events"]),
+});
 
 export default function UserPage() {
   const { user, loading, logout, refetchUser } = useAuth();
@@ -39,44 +50,43 @@ export default function UserPage() {
   const [loadingBlogs, setLoadingBlogs] = useState(false);
   const [blogImage, setBlogImage] = useState(null);
   const [submittingBlog, setSubmittingBlog] = useState(false);
-  const [editingBlogId, setEditingBlogId] = useState(null); 
-  const [blogData, setBlogData] = useState({
+  const [editingBlogId, setEditingBlogId] = useState(null);
+
+  const router = useRouter();
+
+  const defaultBlogValues = {
     title: "",
     description: "",
     category: "Technology",
+  };
+
+  const form = useForm({
+    resolver: zodResolver(blogSchema),
+    defaultValues: defaultBlogValues,
   });
 
   useEffect(() => {
     if (!loading && !user) {
-      window.location.href = "/auth/signin";
+      router.push("/auth/signin");
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   const fetchUserBlogs = async () => {
     if (!user) return;
-
     setLoadingBlogs(true);
     try {
-      const response = await api.get("/blog");
-      const userBlogs = response.data.blogs.filter(
-        (blog) => blog.userId === user.id,
-      );
-      setBlogs(userBlogs);
-    } catch (error) {
-      console.error("Fetch blogs error:", error);
+      const response = await api.get("/blog?mine=true");
+      setBlogs(response.data.blogs);
+    } catch {
       toast.error("Failed to fetch blogs");
     } finally {
       setLoadingBlogs(false);
     }
   };
 
- useEffect(() => {
-  if (user) {
-    fetchUserBlogs();
-  }
-}, [user]);
-
-
+  useEffect(() => {
+    if (user) fetchUserBlogs();
+  }, [user]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -94,9 +104,7 @@ export default function UserPage() {
 
     setAvatarFile(file);
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setAvatarPreview(reader.result);
-    };
+    reader.onloadend = () => setAvatarPreview(reader.result);
     reader.readAsDataURL(file);
   };
 
@@ -128,101 +136,80 @@ export default function UserPage() {
     }
   };
 
-
-  const handleBlogChange = (e) => {
-    const { name, value } = e.target;
-    setBlogData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleBlogSubmit = async (e) => {
-  e.preventDefault();
-  if (!blogData.title || !blogData.description) {
-    toast.error("Title and content are required");
-    return;
-  }
-
-  setSubmittingBlog(true);
-
-  try {
-    const formData = new FormData();
-    formData.append("title", blogData.title);
-    formData.append("description", blogData.description);
-    formData.append("category", blogData.category);
-
-    // Eğer resim seçiliyse ekle
-    if (blogImage && typeof blogImage !== "string") {
-      formData.append("image", blogImage);
-    }
-
-    let response;
-
-    if (editingBlogId) {
-      // Edit modu
-      response = await api.patch(`/blog/update/${editingBlogId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    } else {
-      // Yeni blog
-      response = await api.post("/blog", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    }
-
-    if (response.data.success) {
-      toast.success(response.data.message);
-      setEditingBlogId(null);
-      setBlogData({ title: "", description: "", category: "Technology" });
-      setBlogImage(null);
-      fetchUserBlogs();
-    }
-  } catch (err) {
-    toast.error(err.response?.data?.message || "Failed to create/update blog");
-  } finally {
-    setSubmittingBlog(false);
-  }
-};
-
-
-  const handleBlogDelete = async (blogId) => {
-    if (!confirm("Are you sure you want to delete this blog?")) {
-      return;
-    }
-
+  const onSubmit = async (values) => {
+    setSubmittingBlog(true);
     try {
-      const response = await api.delete("/blog", {
-        params: { id: blogId },
-      });
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("category", values.category);
+
+      if (blogImage && typeof blogImage !== "string") {
+        formData.append("image", blogImage);
+      }
+
+      let response;
+      if (editingBlogId) {
+        response = await api.patch("/blog", formData, {
+          params: { id: editingBlogId },
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        response = await api.post("/blog", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
 
       if (response.data.success) {
         toast.success(response.data.message);
-        fetchUserBlogs(); 
+        setEditingBlogId(null);
+        setBlogImage(null);
+        form.reset(defaultBlogValues);
+        fetchUserBlogs();
+      }
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Failed to create/update blog",
+      );
+    } finally {
+      setSubmittingBlog(false);
+    }
+  };
+
+  const handleBlogDelete = async (blogId) => {
+    if (!confirm("Are you sure you want to delete this blog?")) return;
+
+    try {
+      const response = await api.delete("/blog", { params: { id: blogId } });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchUserBlogs();
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete blog");
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = "/";
-  };
-
-
   const handleEditClick = (blog) => {
     setEditingBlogId(blog._id);
-    setBlogData({
+    setBlogImage(blog.image);
+    form.reset({
       title: blog.title,
       description: blog.description,
       category: blog.category,
     });
-    setBlogImage(blog.image);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const cancelEdit = () => {
     setEditingBlogId(null);
-    setBlogData({ title: "", description: "", category: "Technology" });
     setBlogImage(null);
+    form.reset(defaultBlogValues);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
   };
 
   if (loading) {
@@ -243,17 +230,17 @@ export default function UserPage() {
       </div>
     );
   }
-
   return (
     <div className="relative z-10 py-12 px-5 md:px-12 lg:px-28">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-emerald-400">
           User Dashboard
         </h1>
-        <div className="flex gap-2 mb-6 border-b border-zinc-800">
+
+        <div className="flex gap-2 mb-6">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`px-6 py-3 font-medium transition-colors ${
+            className={`px-6 py-3 font-medium transition-colors duration-300 ${
               activeTab === "profile"
                 ? "text-emerald-400 border-b-2 border-emerald-400"
                 : "text-zinc-400 hover:text-zinc-300"
@@ -263,7 +250,7 @@ export default function UserPage() {
           </button>
           <button
             onClick={() => setActiveTab("blogs")}
-            className={`px-6 py-3 font-medium transition-colors ${
+            className={`px-6 py-3 font-medium transition-colors duration-300  ${
               activeTab === "blogs"
                 ? "text-emerald-400 border-b-2 border-emerald-400"
                 : "text-zinc-400 hover:text-zinc-300"
@@ -272,11 +259,8 @@ export default function UserPage() {
             My Blogs ({blogs.length})
           </button>
         </div>
-
-     
         {activeTab === "profile" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Profile Card */}
             <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
                 <CardTitle className="text-xl text-emerald-400">
@@ -285,15 +269,13 @@ export default function UserPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex flex-col items-center">
-                  <div className="relative group">
+                  <div className="relative group w-[100px] h-[100px]">
                     <Image
                       src={avatarPreview || user.avatar || profile}
-                      width={120}
-                      height={120}
+                      fill
                       alt="profile"
-                      className="rounded-full border-4 border-emerald-600"
+                      className="rounded-full border-4 border-emerald-600 object-cover "
                     />
-
                     {!avatarPreview && (
                       <label
                         htmlFor="avatar-input"
@@ -314,11 +296,7 @@ export default function UserPage() {
 
                   {avatarPreview && (
                     <div className="flex gap-2 mt-4">
-                      <Button
-                        onClick={handleAvatarUpload}
-                        disabled={uploading}
-                        className="bg-emerald-600 hover:bg-emerald-700"
-                      >
+                      <Button onClick={handleAvatarUpload} disabled={uploading}>
                         {uploading ? "Uploading..." : "Upload"}
                       </Button>
                       <Button
@@ -354,9 +332,7 @@ export default function UserPage() {
                     <Mail className="w-5 h-5 text-emerald-500" />
                     <div>
                       <p className="text-xs text-zinc-400">Email</p>
-                      <p className="text-zinc-100 font-medium">
-                        {user.email}
-                      </p>
+                      <p className="text-zinc-100 font-medium">{user.email}</p>
                     </div>
                   </div>
 
@@ -382,21 +358,19 @@ export default function UserPage() {
               <CardContent className="space-y-4">
                 {user.role === "admin" && (
                   <Button
-                    onClick={() => (window.location.href = "/admin/addBlog")}
+                    onClick={() => router.push("/admin/addBlog")}
                     className="w-full bg-emerald-600 hover:bg-emerald-700"
                   >
                     Admin Panel
                   </Button>
                 )}
-
                 <Button
                   onClick={() => (window.location.href = "/")}
-                  className="w-full"
+                  className="w-full hover:bg-linear-to-r hover:from-emerald-400 to-emerald-700"
                   variant="outline"
                 >
                   Browse Blogs
                 </Button>
-
                 <Button
                   onClick={handleLogout}
                   className="w-full bg-red-600 hover:bg-red-700"
@@ -418,13 +392,16 @@ export default function UserPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleBlogSubmit} className="space-y-4">
-                  <div>
-                    <Label>Blog Image</Label>
-                    <label
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
+                    <Label
                       htmlFor="blog-image"
-                      className="cursor-pointer inline-block mt-2"
+                      className="cursor-pointer flex flex-col gap-4  items-start"
                     >
+                      Blog Image
                       <Image
                         src={
                           blogImage
@@ -438,85 +415,91 @@ export default function UserPage() {
                         height={80}
                         className="rounded border hover:opacity-80 transition-opacity"
                       />
-                    </label>
+                    </Label>
                     <input
                       id="blog-image"
                       type="file"
-                      accept="image/*"
-                      onChange={(e) => setBlogImage(e.target.files[0])}
                       className="hidden"
+                      onChange={(e) => setBlogImage(e.target.files[0])}
                     />
-                  </div>
-                  <div>
-                    <Label>Title</Label>
-                    <Input
+
+                    <FormField
+                      control={form.control}
                       name="title"
-                      placeholder="Enter blog title"
-                      value={blogData.title}
-                      onChange={handleBlogChange}
-                      required
-                      disabled={submittingBlog}
+                      render={({ field }) => (
+                        <FormItem className="space-y-4">
+                          <FormLabel>Title</FormLabel>
+                          <FormControl>
+                            <Input {...field} disabled={submittingBlog} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
-                  <div>
-                    <Label>Content</Label>
-                    <Textarea
+
+                    <FormField
+                      control={form.control}
                       name="description"
-                      placeholder="Write your blog content..."
-                      rows={6}
-                      value={blogData.description}
-                      onChange={handleBlogChange}
-                      required
-                      disabled={submittingBlog}
+                      render={({ field }) => (
+                        <FormItem className="space-y-4">
+                          <FormLabel>Content</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              rows={6}
+                              disabled={submittingBlog}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
 
-                  <div className="max-w-xs">
-                    <Label>Category</Label>
-                    <Select
-                      value={blogData.category}
-                      onValueChange={(value) =>
-                        setBlogData((prev) => ({ ...prev, category: value }))
-                      }
-                      disabled={submittingBlog}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Technology">Technology</SelectItem>
-                        <SelectItem value="AI">AI</SelectItem>
-                        <SelectItem value="Startups">Startups</SelectItem>
-                        <SelectItem value="Events">Events</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem className="space-y-4">
+                          <FormLabel>Category</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Technology">
+                                Technology
+                              </SelectItem>
+                              <SelectItem value="AI">AI</SelectItem>
+                              <SelectItem value="Startups">Startups</SelectItem>
+                              <SelectItem value="Events">Events</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="submit"
-                      disabled={submittingBlog}
-                      className="bg-emerald-600 hover:bg-emerald-700"
-                    >
-                      {submittingBlog
-                        ? editingBlogId
-                          ? "Updating..."
-                          : "Publishing..."
-                        : editingBlogId
-                        ? "Update Blog"
-                        : "Publish Blog"}
-                    </Button>
-                    {editingBlogId && (
+                    <div className="flex gap-2">
                       <Button
-                        variant="outline"
-                        onClick={cancelEdit}
+                        type="submit"
                         disabled={submittingBlog}
+                        className="bg-linear-to-r from-emerald-400 to-emerald-700"
                       >
-                        Cancel Edit
+                        {editingBlogId ? "Update Blog" : "Publish Blog"}
                       </Button>
-                    )}
-                  </div>
-                </form>
+                      {editingBlogId && (
+                        <Button
+                          onClick={cancelEdit}
+                          className="bg-zinc-900 border boder-zinc-100 hover:bg-linear-to-r hover:from-emerald-400 hover:to-emerald-700"
+                        >
+                          Cancel Edit
+                        </Button>
+                      )}
+                    </div>
+                  </form>
+                </Form>
               </CardContent>
             </Card>
 
@@ -534,14 +517,15 @@ export default function UserPage() {
                   </div>
                 ) : blogs.length === 0 ? (
                   <p className="text-center text-zinc-400 py-8">
-                    You haven&apos;t created any blogs yet. Create your first blog above!
+                    You haven&apos;t created any blogs yet. Create your first
+                    blog above!
                   </p>
                 ) : (
                   <div className="space-y-4">
                     {blogs.map((blog) => (
                       <div
                         key={blog._id}
-                        className="flex items-center gap-4 p-4 bg-zinc-800 rounded-lg hover:bg-zinc-750 transition-colors"
+                        className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-zinc-800 rounded-lg hover:bg-zinc-750 transition-colors"
                       >
                         <Image
                           src={blog.image}
@@ -554,7 +538,9 @@ export default function UserPage() {
                           <h3 className="font-semibold text-zinc-100">
                             {blog.title}
                           </h3>
-                          <p className="text-sm text-zinc-400">{blog.category}</p>
+                          <p className="text-sm text-zinc-400">
+                            {blog.category}
+                          </p>
                           <p className="text-xs text-zinc-500 mt-1">
                             {new Date(blog.createdAt).toLocaleDateString()}
                           </p>
@@ -564,7 +550,6 @@ export default function UserPage() {
                             onClick={() => handleEditClick(blog)}
                             variant="outline"
                             size="sm"
-                            className="bg-linear-to-r from-emerald-400 to-emerald-800"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -572,7 +557,6 @@ export default function UserPage() {
                             onClick={() => handleBlogDelete(blog._id)}
                             variant="destructive"
                             size="sm"
-                            className="bg-red-600 hover:bg-red-700"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

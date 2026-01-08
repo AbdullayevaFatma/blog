@@ -4,6 +4,7 @@ import { writeFile } from "fs/promises";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
+import { verifyToken } from "@/lib/utils/auth";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -17,6 +18,7 @@ LoadDB();
 export async function GET(request) {
   try {
     const blogId = request.nextUrl.searchParams.get("id");
+    const mine = request.nextUrl.searchParams.get("mine");
 
     if (blogId) {
       const blog = await BlogModel.findById(blogId).lean();
@@ -33,13 +35,39 @@ export async function GET(request) {
       });
     }
 
-  
-    const blogs = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
-    const safeBlogs = blogs.map(sanitizeBlog);
+    if (mine === "true") {
+      const token = request.cookies.get("auth_token")?.value;
+      if (!token) {
+        return NextResponse.json(
+          { success: false, message: "Unauthorized" },
+          { status: 401 }
+        );
+      }
 
+      const decoded = verifyToken(token);
+
+      let blogs;
+      if (decoded.role === "admin") {
+      
+        blogs = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
+      } else {
+       
+        blogs = await BlogModel.find({ userId: decoded.id })
+          .sort({ createdAt: -1 })
+          .lean();
+      }
+
+      return NextResponse.json({
+        success: true,
+        blogs: blogs.map(sanitizeBlog),
+      });
+    }
+
+    
+    const blogs = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
     return NextResponse.json({
       success: true,
-      blogs: safeBlogs,
+      blogs: blogs.map(sanitizeBlog),
     });
   } catch (error) {
     console.error("Get blogs error:", error);
@@ -51,6 +79,8 @@ export async function GET(request) {
 }
 
 
+
+
 function sanitizeBlog(blog) {
   return {
     _id: blog._id,
@@ -58,8 +88,8 @@ function sanitizeBlog(blog) {
     description: blog.description,
     category: blog.category,
     author: blog.author,
-    authorImg: safeUrl(blog.authorImg, "/profile_icon.png"),
-    image: safeUrl(blog.image, "/blog_pic_1.png"),
+    authorImg: safeUrl(blog.authorImg, "/profile_icon.jpg"),
+    image: safeUrl(blog.image, "/blog_pic_1.jpg"),
     userId: blog.userId,
     createdAt: blog.createdAt,
     updatedAt: blog.updatedAt,
@@ -181,7 +211,7 @@ export async function DELETE(request) {
    
     let decoded;
     try {
-      decoded = jwt.verify(token, JWT_SECRET);
+      decoded = verifyToken(token)
     } catch (error) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
@@ -206,7 +236,7 @@ export async function DELETE(request) {
       );
     }
 
-    // 🔥 SAHİPLİK VEYA ADMIN KONTROLÜ
+ 
     const isOwner = blog.userId && blog.userId.toString() === decoded.id;
     const isAdmin = decoded.role === "admin";
 
@@ -217,14 +247,14 @@ export async function DELETE(request) {
       );
     }
 
-    // Image dosyasını sil
+   
     try {
       fs.unlinkSync(`./public${blog.image}`);
     } catch (err) {
       console.log("Image delete warning:", err.message);
     }
 
-    // Blog'u sil
+   
     await BlogModel.findByIdAndDelete(id);
 
     return NextResponse.json({
@@ -237,5 +267,65 @@ export async function DELETE(request) {
       { success: false, message: "Delete failed" },
       { status: 500 }
     );
+  }
+}
+
+export async function PATCH(request) {
+  try {
+    const token = request.cookies.get("auth_token")?.value;
+    if (!token) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
+    const decoded = verifyToken(token)
+
+    const id = request.nextUrl.searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ success: false, message: "Blog ID required" }, { status: 400 });
+    }
+
+    const blog = await BlogModel.findById(id);
+    if (!blog) {
+      return NextResponse.json({ success: false, message: "Blog not found" }, { status: 404 });
+    }
+
+    const isOwner = blog.userId.toString() === decoded.id;
+    const isAdmin = decoded.role === "admin";
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+    }
+
+    const formData = await request.formData();
+    const title = formData.get("title");
+    const description = formData.get("description");
+    const category = formData.get("category");
+    const image = formData.get("image");
+
+    if (title) blog.title = title;
+    if (description) blog.description = description;
+    if (category) blog.category = category;
+
+    if (image && image.size > 0) {
+      try {
+        if (blog.image) fs.unlinkSync(`./public${blog.image}`);
+      } catch {}
+
+      const buffer = Buffer.from(await image.arrayBuffer());
+      const timeStamp = Date.now();
+      const path = `./public/${timeStamp}_${image.name}`;
+      await writeFile(path, buffer);
+      blog.image = `/${timeStamp}_${image.name}`;
+    }
+
+    await blog.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Blog updated successfully",
+      blog,
+    });
+  } catch (error) {
+    console.error("PATCH blog error:", error);
+    return NextResponse.json({ success: false, message: "Update failed" }, { status: 500 });
   }
 }

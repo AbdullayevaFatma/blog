@@ -4,6 +4,7 @@ import { ConnectDB } from "@/lib/config/db";
 import UserModel from "@/models/UserModel";
 import { writeFile } from "fs/promises";
 import fs from "fs";
+import { verifyToken } from "@/lib/utils/auth";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -13,7 +14,6 @@ export async function POST(req) {
     const token = req.cookies.get("auth_token")?.value;
 
     if (!token) {
-      console.log("🔴 BACKEND /user/avatar: Token yok");
       return NextResponse.json(
         { success: false, message: "Unauthorized. Please login." },
         { status: 401 },
@@ -22,10 +22,8 @@ export async function POST(req) {
 
     let decoded;
     try {
-      decoded = jwt.verify(token, JWT_SECRET);
-      console.log("🟢 BACKEND /user/avatar: Token valid for", decoded.name);
+      decoded = verifyToken(token)
     } catch (error) {
-      console.log("🔴 BACKEND /user/avatar: Token invalid");
       return NextResponse.json(
         { success: false, message: "Invalid token" },
         { status: 401 },
@@ -45,7 +43,6 @@ export async function POST(req) {
     const user = await UserModel.findById(decoded.id);
 
     if (!user) {
-      console.log("🔴 BACKEND /user/avatar: User not found");
       return NextResponse.json(
         { success: false, message: "User not found" },
         { status: 404 },
@@ -55,13 +52,7 @@ export async function POST(req) {
     if (user.avatar && user.avatar !== "/profile_icon.jpg") {
       try {
         fs.unlinkSync(`./public${user.avatar}`);
-        console.log("🟢 BACKEND /user/avatar: Old avatar deleted");
-      } catch (err) {
-        console.log(
-          "⚠️ BACKEND /user/avatar: Old avatar delete warning:",
-          err.message,
-        );
-      }
+      } catch (err) {}
     }
 
     const timeStamp = Date.now();
@@ -70,12 +61,8 @@ export async function POST(req) {
     await writeFile(avatarPath, avatarBuffer);
     const avatarUrl = `/${timeStamp}_avatar_${avatar.name}`;
 
-    console.log("🟢 BACKEND /user/avatar: New avatar saved:", avatarUrl);
-
     user.avatar = avatarUrl;
     await user.save();
-
-    console.log("🟢 BACKEND /user/avatar: Avatar updated in database");
 
     return NextResponse.json({
       success: true,
@@ -83,7 +70,6 @@ export async function POST(req) {
       avatar: avatarUrl,
     });
   } catch (error) {
-    console.error("🔴 BACKEND /user/avatar: Error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to update avatar" },
       { status: 500 },

@@ -75,11 +75,11 @@ const Page = () => {
     <div className="flex-1 pt-5 px-5 sm:pt-12 sm:pl-16">
       <h1 className="text-2xl font-bold mb-6">All Subscriptions</h1>
 
-      <div className="overflow-x-auto border rounded-lg">
+      <div className="overflow-x-auto border rounded-lg py-4">
         <Table>
           <TableCaption>
             {emails.length === 0
-              ? "No subscriptions yet"
+              ? ""
               : "All email subscriptions"}
           </TableCaption>
           <TableHeader>

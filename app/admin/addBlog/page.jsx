@@ -24,7 +24,7 @@ const Page = () => {
   const [data, setData] = useState({
     title: "",
     description: "",
-    category: "Startup",
+    category: "Technology",
   });
 
   const onChangeHandler = (e) => {
@@ -62,7 +62,7 @@ const Page = () => {
         setData({
           title: "",
           description: "",
-          category: "Startup",
+          category: "Technology",
         });
       } else {
         toast.error(response.data.message || "Blog could not be added");

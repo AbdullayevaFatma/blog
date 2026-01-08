@@ -72,10 +72,10 @@ const Page = () => {
   return (
     <div className="flex-1 pt-5 px-5 sm:pt-12 sm:pl-16">
       <h1 className="text-2xl font-bold mb-6">All Blogs</h1>
-      <div className="overflow-x-auto border rounded-lg px-10">
+      <div className="overflow-x-auto border rounded-lg px-10 py-4">
         <Table>
           <TableCaption>
-            {blogs.length === 0 ? "No blogs found" : "All published blogs"}
+            {blogs.length === 0 ? "" : "All published blogs"}
           </TableCaption>
           <TableHeader>
             <TableRow>
@@ -92,7 +92,7 @@ const Page = () => {
           <TableBody>
             {blogs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-zinc-400">
+                <TableCell colSpan={4}  className="text-center font-semibold  text-zinc-400">
                   No blogs found. Create your first blog!
                 </TableCell>
               </TableRow>

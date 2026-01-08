@@ -77,7 +77,7 @@ const Header = () => {
           <div className="flex items-center gap-4">
             {!loading && !user && (
               <Button asChild>
-                <Link href="/auth/signup">Start Blogging</Link>
+                <Link href="/auth/signin">Start Blogging</Link>
               </Button>
             )}
             {!loading && user && (
