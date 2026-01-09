@@ -115,7 +115,7 @@ export default function AdminLayout({ children }) {
                   onClick={handleUserDashboard}
                   className="cursor-pointer outline-none focus:bg-emerald-800 focus:text-white transition-all duration-300"
                 >
-                  User Dashboard
+                   Dashboard
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />

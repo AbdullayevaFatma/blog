@@ -126,7 +126,7 @@ const Header = () => {
                       onClick={handleUserDashboard}
                       className="cursor-pointer"
                     >
-                      User Dashboard
+                      Dashboard
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
 

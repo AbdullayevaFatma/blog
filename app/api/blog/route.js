@@ -1,10 +1,12 @@
 import { ConnectDB } from "@/lib/config/db";
 import BlogModel from "@/models/BlogModel";
-import { writeFile } from "fs/promises";
 import fs from "fs";
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/utils/auth";
 import UserModel from "@/models/UserModel";
+import cloudinary from "@/lib/config/cloudinary";
+
+const { uploader } = cloudinary;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -12,6 +14,20 @@ const LoadDB = async () => {
   await ConnectDB();
 };
 LoadDB();
+
+// function safeUrl(url, fallback) {
+//   if (!url) return fallback;
+//   if (typeof url === "string") {
+//     if (url.startsWith("/") || url.startsWith("http")) return url;
+//     return fallback;
+//   }
+//   return fallback;
+// }
+
+function safeUrl(url, fallback) {
+  if (!url) return fallback;
+  return url;
+}
 
 export async function GET(request) {
   try {
@@ -89,15 +105,6 @@ function sanitizeBlog(blog) {
   };
 }
 
-function safeUrl(url, fallback) {
-  if (!url) return fallback;
-  if (typeof url === "string") {
-    if (url.startsWith("/") || url.startsWith("http")) return url;
-    return fallback;
-  }
-  return fallback;
-}
-
 export async function POST(request) {
   try {
     const token = request.cookies.get("auth_token")?.value;
@@ -119,12 +126,11 @@ export async function POST(request) {
     }
 
     const formData = await request.formData();
-    const timeStamp = Date.now();
-
     const title = formData.get("title");
     const description = formData.get("description");
     const category = formData.get("category");
     const image = formData.get("image");
+    const authorImgInput = formData.get("authorImg");
 
     if (!title || !description || !category || !image) {
       return NextResponse.json(
@@ -133,35 +139,41 @@ export async function POST(request) {
       );
     }
 
-    const imageBuffer = Buffer.from(await image.arrayBuffer());
-    const imagePath = `./public/${timeStamp}_${image.name}`;
-    await writeFile(imagePath, imageBuffer);
-    const imgUrl = `/${timeStamp}_${image.name}`;
+    // const imageBuffer = Buffer.from(await image.arrayBuffer());
+    // const imagePath = `./public/${timeStamp}_${image.name}`;
+    // await writeFile(imagePath, imageBuffer);
+    // const imgUrl = `/${timeStamp}_${image.name}`;
 
+   if (!image || !image.arrayBuffer) {
+  return NextResponse.json({ success: false, message: "Image required" }, { status: 400 });
+}
+const imgBuffer = Buffer.from(await image.arrayBuffer());
+const imgUpload = await uploader.upload("data:image/png;base64," + imgBuffer.toString("base64"), {
+  folder: "blog_images",
+});
+const imgUrl = imgUpload.secure_url;
+
+    let authorImgUrl = "/profile_icon.jpg";
     const user = await UserModel.findById(decoded.id);
-    const authorImgInput = formData.get("authorImg");
-    let authorImgUrl = user?.avatar || "/profile_icon.jpg";
-
-    if (
-      authorImgInput &&
-      typeof authorImgInput === "object" &&
-      authorImgInput.arrayBuffer
-    ) {
-      const authorImgBuffer = Buffer.from(await authorImgInput.arrayBuffer());
-      const authorImgPath = `./public/${timeStamp}_author_${authorImgInput.name}`;
-      await writeFile(authorImgPath, authorImgBuffer);
-      authorImgUrl = `/${timeStamp}_author_${authorImgInput.name}`;
+    if (authorImgInput && authorImgInput.arrayBuffer) {
+      const authorBuffer = Buffer.from(await authorImgInput.arrayBuffer());
+      const authorTempPath = `/tmp/${Date.now()}_author_${authorImgInput.name}`;
+      await Deno.writeFile(authorTempPath, authorBuffer).catch(() => {});
+      const authorUpload = await cloudinary.uploader.upload(authorTempPath, {
+        folder: "author_images",
+      });
+      authorImgUrl = authorUpload.secure_url;
     } else if (typeof authorImgInput === "string" && authorImgInput) {
       authorImgUrl = authorImgInput;
+    } else if (user?.avatar) {
+      authorImgUrl = user.avatar;
     }
-
-    const authorName = decoded.name || formData.get("author") || "Anonymous";
 
     const blogData = {
       title,
       description,
       category,
-      author: authorName,
+      author: decoded.name || formData.get("author") || "Anonymous",
       authorImg: authorImgUrl,
       image: imgUrl,
       userId: decoded.id,
@@ -232,11 +244,11 @@ export async function DELETE(request) {
       );
     }
 
-    try {
-      fs.unlinkSync(`./public${blog.image}`);
-    } catch (err) {
-      console.log("Image delete warning:", err.message);
-    }
+    // try {
+    //   fs.unlinkSync(`./public${blog.image}`);
+    // } catch (err) {
+    //   console.log("Image delete warning:", err.message);
+    // }
 
     await BlogModel.findByIdAndDelete(id);
 
@@ -297,41 +309,45 @@ export async function PATCH(request) {
     const image = formData.get("image");
     const authorImgInput = formData.get("authorImg");
 
-    const user = await UserModel.findById(decoded.id);
-
-    let authorImgUrl = user?.avatar || "/profile_icon.jpg";
-    if (
-      authorImgInput &&
-      typeof authorImgInput === "object" &&
-      authorImgInput.arrayBuffer
-    ) {
-      const authorImgBuffer = Buffer.from(await authorImgInput.arrayBuffer());
-      const timeStamp = Date.now();
-      const authorImgPath = `./public/${timeStamp}_author_${authorImgInput.name}`;
-      await writeFile(authorImgPath, authorImgBuffer);
-      authorImgUrl = `/${timeStamp}_author_${authorImgInput.name}`;
-    } else if (typeof authorImgInput === "string" && authorImgInput) {
-      authorImgUrl = authorImgInput;
-    }
-
     if (title) blog.title = title;
     if (description) blog.description = description;
     if (category) blog.category = category;
-    blog.authorImg = authorImgUrl;
 
-    if (image && image.size > 0) {
-      try {
-        if (blog.image) fs.unlinkSync(`./public${blog.image}`);
-      } catch {}
+    const user = await UserModel.findById(decoded.id);
 
-      const buffer = Buffer.from(await image.arrayBuffer());
-      const timeStamp = Date.now();
-      const path = `./public/${timeStamp}_${image.name}`;
-      await writeFile(path, buffer);
-      blog.image = `/${timeStamp}_${image.name}`;
+    let authorImgUrl = user?.avatar || "/profile_icon.jpg";
+    if (authorImgInput && authorImgInput.arrayBuffer) {
+      const buffer = Buffer.from(await authorImgInput.arrayBuffer());
+      const tempPath = `/tmp/${Date.now()}_author_${authorImgInput.name}`;
+      await fs.promises.writeFile(tempPath, buffer);
+      const upload = await cloudinary.uploader.upload(tempPath, {
+        folder: "author_images",
+      });
+      blog.authorImg = upload.secure_url;
+    } else if (typeof authorImgInput === "string" && authorImgInput) {
+      blog.authorImg = authorImgInput;
+    } else if (user?.avatar) {
+      blog.authorImg = user.avatar;
     }
-
+    if (image && image.size > 0) {
+      const buffer = Buffer.from(await image.arrayBuffer());
+      const tempPath = `/tmp/${Date.now()}_${image.name}`;
+      await fs.promises.writeFile(tempPath, buffer);
+      const upload = await cloudinary.uploader.upload(tempPath, {
+        folder: "blog_images",
+      });
+      blog.image = upload.secure_url;
+    }
     await blog.save();
+
+    //   const buffer = Buffer.from(await image.arrayBuffer());
+    //   const timeStamp = Date.now();
+    //   const path = `./public/${timeStamp}_${image.name}`;
+    //   await writeFile(path, buffer);
+    //   blog.image = `/${timeStamp}_${image.name}`;
+    // }
+
+    // await blog.save();
 
     return NextResponse.json({
       success: true,

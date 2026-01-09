@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import DeleteDialog from "@/components/DeleteDialog";
 
 const blogSchema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -51,6 +52,7 @@ export default function DashboardPage() {
   const [blogImage, setBlogImage] = useState(null);
   const [submittingBlog, setSubmittingBlog] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
 
   const router = useRouter();
 
@@ -176,19 +178,24 @@ export default function DashboardPage() {
     }
   };
 
-  const handleBlogDelete = async (blogId) => {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
+const handleBlogDelete = async () => {
+  if (!deleteId) return;
 
-    try {
-      const response = await api.delete("/blog", { params: { id: blogId } });
-      if (response.data.success) {
-        toast.success(response.data.message);
-        fetchUserBlogs();
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete blog");
+  try {
+    const response = await api.delete("/blog", {
+      params: { id: deleteId },
+    });
+
+    if (response.data.success) {
+      toast.success(response.data.message);
+      fetchUserBlogs();
     }
-  };
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to delete blog");
+  } finally {
+    setDeleteId(null);
+  }
+};
 
   const handleEditClick = (blog) => {
     setEditingBlogId(blog._id);
@@ -233,9 +240,7 @@ export default function DashboardPage() {
   return (
     <div className="relative z-10 py-12 px-5 md:px-12 lg:px-28">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-emerald-400">
-           Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold mb-8 text-emerald-400">Dashboard</h1>
 
         <div className="flex gap-2 mb-6">
           <button
@@ -256,7 +261,9 @@ export default function DashboardPage() {
                 : "text-zinc-400 hover:text-zinc-300"
             }`}
           >
-           {user.role === "admin" ? `Blogs (${blogs.length})` : `My Blogs (${blogs.length})`}
+            {user.role === "admin"
+              ? `Blogs (${blogs.length})`
+              : `My Blogs (${blogs.length})`}
           </button>
         </div>
         {activeTab === "profile" && (
@@ -560,7 +567,7 @@ export default function DashboardPage() {
                             <Edit className="w-4 h-4" />
                           </Button>
                           <Button
-                            onClick={() => handleBlogDelete(blog._id)}
+                            onClick={() => setDeleteId(blog._id)}
                             variant="destructive"
                             size="sm"
                           >
@@ -576,6 +583,17 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+      <DeleteDialog
+  open={!!deleteId}
+  onOpenChange={(open) => {
+    if (!open) setDeleteId(null);
+  }}
+  onConfirm={handleBlogDelete}
+  title="Confirm Blog Deletion"
+  description="This blog will be permanently deleted. This action cannot be undone."
+  confirmText="Delete"
+  cancelText="Cancel"
+/>
     </div>
   );
 }

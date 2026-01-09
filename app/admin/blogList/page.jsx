@@ -1,7 +1,7 @@
 "use client";
 
 import BlogTableItem from "@/components/adminComponents/BlogTableItem";
-import DeleteDialog from "@/components/adminComponents/DeleteDialog";
+import DeleteDialog from "@/components/DeleteDialog";
 import {
   Table,
   TableBody,

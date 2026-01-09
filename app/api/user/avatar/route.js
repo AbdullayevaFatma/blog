@@ -5,6 +5,7 @@ import UserModel from "@/models/UserModel";
 import { writeFile } from "fs/promises";
 import fs from "fs";
 import { verifyToken } from "@/lib/utils/auth";
+import cloudinary from "@/lib/config/cloudinary";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -22,7 +23,7 @@ export async function POST(req) {
 
     let decoded;
     try {
-      decoded = verifyToken(token)
+      decoded = verifyToken(token);
     } catch (error) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
@@ -56,10 +57,17 @@ export async function POST(req) {
     }
 
     const timeStamp = Date.now();
-    const avatarBuffer = Buffer.from(await avatar.arrayBuffer());
-    const avatarPath = `./public/${timeStamp}_avatar_${avatar.name}`;
-    await writeFile(avatarPath, avatarBuffer);
-    const avatarUrl = `/${timeStamp}_avatar_${avatar.name}`;
+    // const avatarBuffer = Buffer.from(await avatar.arrayBuffer());
+    // const avatarPath = `./public/${timeStamp}_avatar_${avatar.name}`;
+    // await writeFile(avatarPath, avatarBuffer);
+    // const avatarUrl = `/${timeStamp}_avatar_${avatar.name}`;
+    const buffer = Buffer.from(await avatar.arrayBuffer());
+    const tempPath = `/tmp/${timeStamp}_avatar_${avatar.name}`;
+    await writeFile(tempPath, buffer);
+    const uploadResult = await cloudinary.uploader.upload(tempPath, {
+      folder: "avatars",
+    });
+    const avatarUrl = uploadResult.secure_url;
 
     user.avatar = avatarUrl;
     await user.save();
