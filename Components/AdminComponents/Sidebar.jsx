@@ -1,6 +1,7 @@
 import { Plus, FileText, Mail } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import SidebarButton from "./SidebarButton";
 
 const Sidebar = () => {
   return (
@@ -13,27 +14,17 @@ const Sidebar = () => {
         </Link>
       </div>
       <div className="flex flex-col items-center gap-4">
-        <Link
-          href="/admin/addBlog"
-          className="flex items-center gap-2 sm:gap-3 font-medium px-3 py-2 bg-zinc-900 rounded-xl  shadow-zinc-500 shadow  w-full max-w-55"
-        >
-          <Plus size={24} />
-          <p className="truncate">Add blogs</p>
-        </Link>
-        <Link
+        <SidebarButton href="/admin/addBlog" icon={Plus} label="Add blogs" />
+        <SidebarButton
           href="/admin/blogList"
-          className="flex items-center gap-2 sm:gap-3 font-medium px-3 py-2 bg-zinc-900 rounded-xl  shadow-zinc-500 shadow  w-full max-w-55"
-        >
-          <FileText size={24} />
-          <p className="truncate">Blog lists</p>
-        </Link>
-        <Link
+          icon={FileText}
+          label="Blog lists"
+        />
+        <SidebarButton
           href="/admin/subscriptions"
-          className="flex items-center gap-2 sm:gap-3 font-medium px-3 py-2 bg-zinc-900 rounded-xl  shadow-zinc-500 shadow  w-full max-w-55"
-        >
-          <Mail size={24} />
-          <p className="truncate">Subscriptions</p>
-        </Link>
+          icon={Mail}
+          label="Subscriptions"
+        />
       </div>
     </div>
   );

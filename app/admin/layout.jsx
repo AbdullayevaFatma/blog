@@ -33,11 +33,11 @@ export default function AdminLayout({ children }) {
   }, [user, loading, router]);
 
   const handleUserDashboard = () => {
-    window.location.href = "/user";
+    router.push("/dashboard");
   };
 
   const handleHomePage = () => {
-    window.location.href = "/";
+    router.push("/");
   };
 
   const handleLogout = async () => {
@@ -70,27 +70,34 @@ export default function AdminLayout({ children }) {
         <Sidebar />
         <div className="flex flex-col w-full">
           <div className="flex items-center justify-between w-full py-12 max-h-15 px-14">
-            <h3 className="font-medium">Admin Panel</h3>
+            <h2 className="font-bold text-lg">Admin Panel</h2>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 focus:outline-none hover:opacity-80 transition-opacity">
-                  <span className="text-sm text-zinc-300 hidden sm:block">
-                    {user.name}
+                  <span className="text-md font-bold text-zinc-300 hidden sm:block">
+                    {user.name
+                      ? user.name.charAt(0).toUpperCase() +
+                        user.name.slice(1).toLowerCase()
+                      : ""}
                   </span>
-                  <Image
-                    src={user.avatar || profile}
-                    width={42}
-                    height={42}
-                    alt="profile icon"
-                    className="rounded-full border-2 border-emerald-600 cursor-pointer hover:border-emerald-500 transition-colors"
-                  />
+                  <div className="relative w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden hover:border-emerald-500 transition-colors">
+                    <Image
+                      src={user.avatar || profile}
+                      alt="profile icon"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 </button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-56 ">
                 <div className="px-2 py-3">
-                  <p className="text-sm font-semibold text-zinc-100">
-                    {user.name}
+                  <p className="text-sm font-bold text-zinc-100">
+                    {user.name
+                      ? user.name.charAt(0).toUpperCase() +
+                        user.name.slice(1).toLowerCase()
+                      : ""}
                   </p>
                   <p className="text-xs text-zinc-400 truncate">{user.email}</p>
                   <p className="text-xs text-emerald-500 mt-1 font-medium">

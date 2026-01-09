@@ -33,7 +33,7 @@ const BlogItem = ({ title, description, category, image, id }) => {
       </Link>
 
       <div className="py-8 px-4">
-        <span className="inline-block px-3 py-2 bg-linear-to-r from-emerald-400 to-emerald-700 text-white text-sm font-medium rounded-full mb-3">
+        <span className="inline-block px-3 py-2 bg-linear-to-r from-emerald-400 to-emerald-700 text-white text-sm font-medium rounded-lg mb-3">
           {category}
         </span>
 

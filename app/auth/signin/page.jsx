@@ -50,7 +50,7 @@ export default function SigninPage() {
         toast.success(res.data.message || "Welcome back!");
         await refetchUser();
         const redirectPath =
-          res.data.user.role === "admin" ? "/admin/addBlog" : "/user";
+          res.data.user.role === "admin" ? "/admin/addBlog" : "/dashboard";
         router.push(redirectPath);
       } else {
         toast.error(res.data.message || "Login failed");
@@ -66,7 +66,7 @@ export default function SigninPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      const redirectPath = user.role === "admin" ? "/admin/addBlog" : "/user";
+      const redirectPath = user.role === "admin" ? "/admin/addBlog" : "/dashboard";
       router.replace(redirectPath);
     }
   }, [user, loading, router]);

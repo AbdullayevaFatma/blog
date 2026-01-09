@@ -1,6 +1,7 @@
 "use client";
 
 import BlogTableItem from "@/components/adminComponents/BlogTableItem";
+import DeleteDialog from "@/components/adminComponents/DeleteDialog";
 import {
   Table,
   TableBody,
@@ -18,6 +19,7 @@ import { toast } from "react-toastify";
 const Page = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState(null);
 
   const fetchBlogs = useCallback(async () => {
     try {
@@ -32,14 +34,12 @@ const Page = () => {
     }
   }, []);
 
-  const deleteBlog = async (mongoId) => {
-    if (!confirm("Are you sure you want to delete this blog?")) {
-      return;
-    }
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
 
     try {
       const response = await api.delete("/blog", {
-        params: { id: mongoId },
+        params: { id: deleteId },
       });
 
       if (response.data.success) {
@@ -47,8 +47,9 @@ const Page = () => {
         fetchBlogs();
       }
     } catch (error) {
-      console.error("Delete blog error:", error);
       toast.error(error.response?.data?.message || "Failed to delete blog");
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -104,7 +105,7 @@ const Page = () => {
                 <BlogTableItem
                   key={blog._id}
                   blog={blog}
-                  deleteBlog={deleteBlog}
+                  deleteBlog={(id) => setDeleteId(id)}
                 />
               ))
             )}
@@ -120,6 +121,15 @@ const Page = () => {
           )}
         </Table>
       </div>
+      <DeleteDialog
+        open={!!deleteId}
+        onOpenChange={() => setDeleteId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete blog?"
+        description="This blog will be permanently deleted and cannot be recovered."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

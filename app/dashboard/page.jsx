@@ -36,7 +36,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const blogSchema = z.object({
   title: z.string().min(3, "Title is required"),
-  description: z.string().min(10, "Content is required"),
+  description: z.string().min(10, "Content must be at least 10 characters"),
   category: z.enum(["Technology", "AI", "Startups", "Events"]),
 });
 
@@ -446,7 +446,8 @@ export default function DashboardPage() {
                           <FormControl>
                             <Textarea
                               {...field}
-                              rows={6}
+                              rows={8}
+                              className="h-40"
                               disabled={submittingBlog}
                             />
                           </FormControl>

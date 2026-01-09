@@ -14,10 +14,12 @@ import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/adminComponents/DeleteDialog";
 
 const Page = () => {
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState(null);
 
   const fetchEmails = useCallback(async () => {
     try {
@@ -25,21 +27,18 @@ const Page = () => {
       const response = await api.get("/email");
       setEmails(response.data.emails || []);
     } catch (error) {
-      console.error("Fetch emails error:", error);
       toast.error("Failed to fetch subscriptions");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const deleteEmail = async (mongoId) => {
-    if (!confirm("Are you sure you want to delete this subscription?")) {
-      return;
-    }
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
 
     try {
       const response = await api.delete("/email", {
-        params: { id: mongoId },
+        params: { id: deleteId },
       });
 
       if (response.data.success) {
@@ -47,10 +46,11 @@ const Page = () => {
         fetchEmails();
       }
     } catch (error) {
-      console.error("Delete email error:", error);
       toast.error(
         error.response?.data?.message || "Failed to delete subscription",
       );
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -113,7 +113,7 @@ const Page = () => {
                   </TableCell>
                   <TableCell>
                     <Button
-                      onClick={() => deleteEmail(email._id)}
+                      onClick={() => setDeleteId(email._id)}
                       variant="destructive"
                       className="bg-red-600 hover:bg-red-700"
                     >
@@ -135,6 +135,13 @@ const Page = () => {
           )}
         </Table>
       </div>
+      <DeleteDialog
+        open={!!deleteId}
+        onOpenChange={() => setDeleteId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete subscription?"
+        description="This email subscription will be permanently deleted."
+      />
     </div>
   );
 };

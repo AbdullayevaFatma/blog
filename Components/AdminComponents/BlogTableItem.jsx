@@ -2,26 +2,27 @@ import Image from "next/image";
 import React from "react";
 import { TableRow, TableCell } from "../ui/table";
 import { Button } from "../ui/button";
-import profile from "@/public/profile_icon.jpg"
+import profile from "@/public/profile_icon.jpg";
 
 const BlogTableItem = ({ blog, deleteBlog }) => {
   const { authorImg, title, date, author, _id: mongoId } = blog;
-  const blogDate = new Date(date).toLocaleDateString("tr-TR", {
+  const blogDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
   return (
     <TableRow>
       <TableCell className="hidden sm:table-cell">
         <div className="flex items-center gap-3">
-          <Image
-            src={authorImg || profile}
-            alt="author image"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
+          <div className="relative w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden hover:border-emerald-500 transition-colors cursor-pointer">
+            <Image
+              src={authorImg || profile}
+              alt="profile icon"
+              fill
+              className="object-cover"
+            />
+          </div>
           <span className="font-medium">{author || "No author"}</span>
         </div>
       </TableCell>

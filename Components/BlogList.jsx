@@ -74,8 +74,8 @@ const BlogList = () => {
             onClick={() => setMenu(cat)}
             className={
               menu === cat
-                ? "bg-linear-to-r from-emerald-400 to-emerald-700 text-white py-2 px-6 rounded-full font-semibold shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:shadow-emerald-600/40"
-                : "bg-zinc-800 border border-zinc-700 text-zinc-300 py-2 px-6 rounded-full font-medium hover:border-emerald-600 hover:text-emerald-400 transition-all duration-300"
+                ? "bg-linear-to-r from-emerald-400 to-emerald-700 text-white py-2 px-6 rounded-lg font-semibold shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:shadow-emerald-600/40"
+                : "bg-zinc-800 border border-zinc-700 text-zinc-300 py-2 px-6 rounded-lg font-medium hover:border-emerald-600 hover:text-emerald-400 transition-all duration-300"
             }
           >
             {cat}

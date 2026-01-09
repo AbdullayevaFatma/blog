@@ -52,7 +52,7 @@ const Header = () => {
   };
 
   const handleUserDashboard = () => {
-    router.push("/user");
+    router.push("/dashboard");
   };
 
   const handleAdminPanel = () => {
@@ -86,19 +86,18 @@ const Header = () => {
                   asChild
                   className="bg-linear-to-r from-emerald-400 to-emerald-700"
                 >
-                  <Link href="/user">Dashboard</Link>
+                  <Link href="/dashboard">Dashboard</Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="focus:outline-none rounded-full">
-                      <Image
-                        src={user.avatar || profile}
-                        width={42}
-                        height={42}
-                        className="rounded-full cursor-pointer border-2 border-emerald-600 hover:border-emerald-500 transition-colors"
-                        alt="avatar"
-                      />
-                    </button>
+                    <div className="relative w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden hover:border-emerald-500 transition-colors cursor-pointer">
+                                       <Image
+                                         src={user.avatar || profile}
+                                         alt="profile icon"
+                                         fill
+                                         className="object-cover"
+                                       />
+                                     </div>
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end" className="w-56">
