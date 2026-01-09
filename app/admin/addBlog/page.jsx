@@ -45,7 +45,6 @@ export default function AdminAddBlogPage() {
     },
   });
 
-
   useEffect(() => {
     if (!loading && (!user || user.role !== "admin")) {
       router.push("/auth/signin");
@@ -79,7 +78,8 @@ export default function AdminAddBlogPage() {
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to add blog. Please try again."
+        error.response?.data?.message ||
+          "Failed to add blog. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -116,8 +116,13 @@ export default function AdminAddBlogPage() {
               >
                 <Image
                   src={
-                    blogImage ? URL.createObjectURL(blogImage) : upload_area
+                    blogImage
+                      ? typeof blogImage === "string"
+                        ? blogImage
+                        : URL.createObjectURL(blogImage)
+                      : upload_area
                   }
+                  al
                   alt="upload"
                   width={140}
                   height={80}

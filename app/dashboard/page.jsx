@@ -234,7 +234,7 @@ export default function DashboardPage() {
     <div className="relative z-10 py-12 px-5 md:px-12 lg:px-28">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-emerald-400">
-          User Dashboard
+           Dashboard
         </h1>
 
         <div className="flex gap-2 mb-6">
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                 : "text-zinc-400 hover:text-zinc-300"
             }`}
           >
-            My Blogs ({blogs.length})
+           {user.role === "admin" ? `Blogs (${blogs.length})` : `My Blogs (${blogs.length})`}
           </button>
         </div>
         {activeTab === "profile" && (
@@ -324,7 +324,12 @@ export default function DashboardPage() {
                     <User className="w-5 h-5 text-emerald-500" />
                     <div>
                       <p className="text-xs text-zinc-400">Name</p>
-                      <p className="text-zinc-100 font-medium">{user.name}</p>
+                      <p className="text-zinc-100 font-medium">
+                        {user.name
+                          ? user.name.charAt(0).toUpperCase() +
+                            user.name.slice(1).toLowerCase()
+                          : ""}
+                      </p>
                     </div>
                   </div>
 
@@ -529,7 +534,7 @@ export default function DashboardPage() {
                         className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-zinc-800 rounded-lg hover:bg-zinc-750 transition-colors"
                       >
                         <Image
-                          src={blog.image}
+                          src={blog.image || "/blog_pic_1.png"}
                           alt={blog.title}
                           width={80}
                           height={80}

@@ -89,16 +89,21 @@ const Page = ({ params }) => {
               {data.title}
             </h1>
             <div className="flex items-center justify-center gap-4 mb-8">
-              <Image
-                className="rounded-full border-2 border-emerald-600"
-                src={data.authorImg}
-                width={60}
-                height={60}
-                alt="author image"
-              />
+              <div className="relative w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden hover:border-emerald-500 transition-colors cursor-pointer">
+                <Image
+                  src={data.authorImg}
+                  alt="profile icon"
+                  fill
+                  sizes="48px"
+                  className="object-cover"
+                />
+              </div>
               <div>
                 <p className="text-zinc-100 font-semibold text-lg">
-                  {data.author}
+                  {data.author
+                    ? data.author.charAt(0).toUpperCase() +
+                      data.author.slice(1).toLowerCase()
+                    : ""}
                 </p>
                 <p className="text-zinc-400 text-sm">
                   {new Date(data.createdAt || data.date).toLocaleDateString(
@@ -118,6 +123,7 @@ const Page = ({ params }) => {
                   src={data.image}
                   alt="blog image"
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover rounded-2xl border-2 border-zinc-800 shadow-xl"
                   priority
                 />

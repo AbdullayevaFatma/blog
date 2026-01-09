@@ -103,7 +103,10 @@ const Header = () => {
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="px-2 py-3 space-y-2">
                       <p className="text-sm font-semibold text-zinc-100">
-                        {user.name}
+                        {user.name
+                      ? user.name.charAt(0).toUpperCase() +
+                        user.name.slice(1).toLowerCase()
+                      : ""}
                       </p>
                       <p className="text-xs text-zinc-400 truncate">
                         {user.email}
@@ -147,7 +150,7 @@ const Header = () => {
             Latest Blogs
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-sm sm:text-base text-zinc-400">
-            Explore insights and updates on AI,technology,startups and events
+            Explore insights and updates on AI,Technology,Startups and Events
             from our vibrant community of writers.
           </p>
           <div className="mt-8">

@@ -4,15 +4,14 @@ import { writeFile } from "fs/promises";
 import fs from "fs";
 import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/utils/auth";
+import UserModel from "@/models/UserModel";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-
 
 const LoadDB = async () => {
   await ConnectDB();
 };
 LoadDB();
-
 
 export async function GET(request) {
   try {
@@ -24,7 +23,7 @@ export async function GET(request) {
       if (!blog) {
         return NextResponse.json(
           { success: false, blog: null, message: "Blog not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -39,7 +38,7 @@ export async function GET(request) {
       if (!token) {
         return NextResponse.json(
           { success: false, message: "Unauthorized" },
-          { status: 401 }
+          { status: 401 },
         );
       }
 
@@ -47,10 +46,8 @@ export async function GET(request) {
 
       let blogs;
       if (decoded.role === "admin") {
-      
         blogs = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
       } else {
-       
         blogs = await BlogModel.find({ userId: decoded.id })
           .sort({ createdAt: -1 })
           .lean();
@@ -62,7 +59,6 @@ export async function GET(request) {
       });
     }
 
-    
     const blogs = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
     return NextResponse.json({
       success: true,
@@ -72,13 +68,10 @@ export async function GET(request) {
     console.error("Get blogs error:", error);
     return NextResponse.json(
       { success: false, message: "Server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-
-
-
 
 function sanitizeBlog(blog) {
   return {
@@ -92,7 +85,7 @@ function sanitizeBlog(blog) {
     userId: blog.userId,
     createdAt: blog.createdAt,
     updatedAt: blog.updatedAt,
-    date: blog.createdAt, 
+    date: blog.createdAt,
   };
 }
 
@@ -105,33 +98,29 @@ function safeUrl(url, fallback) {
   return fallback;
 }
 
-
 export async function POST(request) {
   try {
-  
     const token = request.cookies.get("auth_token")?.value;
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized. Please login." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-  
     let decoded;
     try {
-      decoded = verifyToken(token)
+      decoded = verifyToken(token);
     } catch (error) {
       return NextResponse.json(
         { success: false, message: "Invalid token. Please login again." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const formData = await request.formData();
     const timeStamp = Date.now();
 
-    
     const title = formData.get("title");
     const description = formData.get("description");
     const category = formData.get("category");
@@ -140,21 +129,24 @@ export async function POST(request) {
     if (!title || !description || !category || !image) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
- 
     const imageBuffer = Buffer.from(await image.arrayBuffer());
     const imagePath = `./public/${timeStamp}_${image.name}`;
     await writeFile(imagePath, imageBuffer);
     const imgUrl = `/${timeStamp}_${image.name}`;
 
-   
+    const user = await UserModel.findById(decoded.id);
     const authorImgInput = formData.get("authorImg");
-    let authorImgUrl = decoded.avatar || "/profile_icon.jpg";
+    let authorImgUrl = user?.avatar || "/profile_icon.jpg";
 
-    if (authorImgInput && typeof authorImgInput === "object" && authorImgInput.arrayBuffer) {
+    if (
+      authorImgInput &&
+      typeof authorImgInput === "object" &&
+      authorImgInput.arrayBuffer
+    ) {
       const authorImgBuffer = Buffer.from(await authorImgInput.arrayBuffer());
       const authorImgPath = `./public/${timeStamp}_author_${authorImgInput.name}`;
       await writeFile(authorImgPath, authorImgBuffer);
@@ -163,10 +155,8 @@ export async function POST(request) {
       authorImgUrl = authorImgInput;
     }
 
-  
     const authorName = decoded.name || formData.get("author") || "Anonymous";
 
-    
     const blogData = {
       title,
       description,
@@ -174,7 +164,7 @@ export async function POST(request) {
       author: authorName,
       authorImg: authorImgUrl,
       image: imgUrl,
-      userId: decoded.id, 
+      userId: decoded.id,
     };
 
     await BlogModel.create(blogData);
@@ -184,37 +174,34 @@ export async function POST(request) {
         success: true,
         message: "Blog added successfully!",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Blog create error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create blog" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-
 export async function DELETE(request) {
   try {
-    
     const token = request.cookies.get("auth_token")?.value;
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-   
     let decoded;
     try {
-      decoded = verifyToken(token)
+      decoded = verifyToken(token);
     } catch (error) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -222,7 +209,7 @@ export async function DELETE(request) {
     if (!id) {
       return NextResponse.json(
         { success: false, message: "Blog ID required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -231,29 +218,26 @@ export async function DELETE(request) {
     if (!blog) {
       return NextResponse.json(
         { success: false, message: "Blog not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
- 
     const isOwner = blog.userId && blog.userId.toString() === decoded.id;
     const isAdmin = decoded.role === "admin";
 
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { success: false, message: "You can only delete your own blogs" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-   
     try {
       fs.unlinkSync(`./public${blog.image}`);
     } catch (err) {
       console.log("Image delete warning:", err.message);
     }
 
-   
     await BlogModel.findByIdAndDelete(id);
 
     return NextResponse.json({
@@ -264,7 +248,7 @@ export async function DELETE(request) {
     console.error("Delete blog error:", error);
     return NextResponse.json(
       { success: false, message: "Delete failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -273,25 +257,37 @@ export async function PATCH(request) {
   try {
     const token = request.cookies.get("auth_token")?.value;
     if (!token) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
-    const decoded = verifyToken(token)
+    const decoded = verifyToken(token);
 
     const id = request.nextUrl.searchParams.get("id");
     if (!id) {
-      return NextResponse.json({ success: false, message: "Blog ID required" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: "Blog ID required" },
+        { status: 400 },
+      );
     }
 
     const blog = await BlogModel.findById(id);
     if (!blog) {
-      return NextResponse.json({ success: false, message: "Blog not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "Blog not found" },
+        { status: 404 },
+      );
     }
 
     const isOwner = blog.userId.toString() === decoded.id;
     const isAdmin = decoded.role === "admin";
     if (!isOwner && !isAdmin) {
-      return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, message: "Forbidden" },
+        { status: 403 },
+      );
     }
 
     const formData = await request.formData();
@@ -299,10 +295,29 @@ export async function PATCH(request) {
     const description = formData.get("description");
     const category = formData.get("category");
     const image = formData.get("image");
+    const authorImgInput = formData.get("authorImg");
+
+    const user = await UserModel.findById(decoded.id);
+
+    let authorImgUrl = user?.avatar || "/profile_icon.jpg";
+    if (
+      authorImgInput &&
+      typeof authorImgInput === "object" &&
+      authorImgInput.arrayBuffer
+    ) {
+      const authorImgBuffer = Buffer.from(await authorImgInput.arrayBuffer());
+      const timeStamp = Date.now();
+      const authorImgPath = `./public/${timeStamp}_author_${authorImgInput.name}`;
+      await writeFile(authorImgPath, authorImgBuffer);
+      authorImgUrl = `/${timeStamp}_author_${authorImgInput.name}`;
+    } else if (typeof authorImgInput === "string" && authorImgInput) {
+      authorImgUrl = authorImgInput;
+    }
 
     if (title) blog.title = title;
     if (description) blog.description = description;
     if (category) blog.category = category;
+    blog.authorImg = authorImgUrl;
 
     if (image && image.size > 0) {
       try {
@@ -325,6 +340,9 @@ export async function PATCH(request) {
     });
   } catch (error) {
     console.error("PATCH blog error:", error);
-    return NextResponse.json({ success: false, message: "Update failed" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Update failed" },
+      { status: 500 },
+    );
   }
 }
