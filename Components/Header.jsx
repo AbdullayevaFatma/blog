@@ -3,11 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/lib/context/AuthContext";
 import {
@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import profile from "@/public/profile_icon.jpg";
