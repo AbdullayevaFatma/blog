@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/Alert-dialog";
+} from "@/components/ui/alert-dialog";
 
 const DeleteDialog = ({
   open,

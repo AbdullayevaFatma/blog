@@ -3,18 +3,18 @@
 import { useAuth } from "@/lib/context/AuthContext";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/Select";
-import { Label } from "@/components/ui/Label";
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -22,7 +22,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/Form";
+} from "@/components/ui/form";
 import { User, Mail, Shield, Camera, Plus, Trash2, Edit } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/lib/api.js";
