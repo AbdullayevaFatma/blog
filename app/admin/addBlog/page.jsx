@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import upload_area from "@/public/upload_area.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/Textarea";
 import {
   Select,
   SelectContent,

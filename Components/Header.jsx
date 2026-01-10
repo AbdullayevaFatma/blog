@@ -74,10 +74,10 @@ const Header = () => {
               blog.
             </h1>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ">
             {!loading && !user && (
               <Button asChild>
-                <Link href="/auth/signin">Start Blogging</Link>
+                <Link href="/auth/signin" className="bg-linear-to-r from-emerald-400 to-emerald-700">Start Blogging</Link>
               </Button>
             )}
             {!loading && user && (
