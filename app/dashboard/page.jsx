@@ -459,7 +459,7 @@ const handleBlogDelete = async () => {
                             <Textarea
                               {...field}
                               rows={8}
-                              className="h-40"
+                              className="h-40 overflow-y-auto "
                               disabled={submittingBlog}
                             />
                           </FormControl>

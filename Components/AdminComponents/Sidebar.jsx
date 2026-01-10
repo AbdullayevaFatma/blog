@@ -5,7 +5,7 @@ import SidebarButton from "./SidebarButton";
 
 const Sidebar = () => {
   return (
-    <div className="flex flex-col gap-6 bg-emerald-600/20 h-screen min-w-40 sm:min-w-50 md:w-80 overflow-hidden p-4">
+    <div className="flex flex-col gap-6 bg-emerald-600/20 h-screen min-w-40 sm:min-w-50 md:w-80 overflow-hidden px-4 py-6">
       <div className="text-start mb-6">
         <Link href="/">
           <h1 className="text-2xl sm:text-4xl font-bold tracking-wide text-emerald-50 cursor-pointer hover:text-emerald-100 transition-colors duration-300">
