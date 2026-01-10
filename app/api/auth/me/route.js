@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { verifyToken } from "@/lib/utils/auth";
-import { ConnectDB } from "@/lib/config/db";
-import UserModel from "@/models/UserModel";
+import { verifyToken } from "../../../../lib/utils/auth";
+import { ConnectDB } from "../../../../lib/config/db";
+import UserModel from "../../../../models/UserModel";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

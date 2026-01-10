@@ -9,7 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { useForm } from "react-hook-form";
-import { useAuth } from "@/lib/context/AuthContext";
+import { useAuth } from "../lib/context/AuthContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +18,8 @@ import {
   DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import api from "@/lib/api";
-import profile from "@/public/profile_icon.jpg";
+import api from "../lib/api";
+import profile from "../public/profile_icon.jpg";
 
 const emailFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),

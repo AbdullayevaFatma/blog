@@ -1,7 +1,7 @@
 "use client";
 
-import BlogTableItem from "@/components/adminComponents/BlogTableItem";
-import DeleteDialog from "@/components/DeleteDialog";
+import BlogTableItem from "../../../components/adminComponents/BlogTableItem";
+import DeleteDialog from "../../../components/DeleteDialog";
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableFooter,
   TableCell,
 } from "../../../components/ui/table";
-import api from "@/lib/api";
+import api from "../../../lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 

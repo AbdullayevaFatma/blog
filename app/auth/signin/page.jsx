@@ -1,12 +1,12 @@
 "use client";
 
 import { z } from "zod";
-import api from "@/lib/api";
+import api from "../../../lib/api";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { useAuth } from "@/lib/context/AuthContext";
+import { useAuth } from "../../../lib/context/AuthContext";
 import { useEffect, useState } from "react";
 
 import {

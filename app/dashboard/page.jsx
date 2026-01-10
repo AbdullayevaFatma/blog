@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/context/AuthContext";
+import { useAuth } from "../../lib/context/AuthContext";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "../../components/ui/button";
@@ -25,15 +25,15 @@ import {
 } from "../../components/ui/form";
 import { User, Mail, Shield, Camera, Plus, Trash2, Edit } from "lucide-react";
 import { toast } from "react-toastify";
-import api from "@/lib/api.js";
-import upload_area from "@/public/upload_area.png";
-import profile from "@/public/profile_icon.jpg";
+import api from "../../lib/api";
+import upload_area from "../../public/upload_area.png";
+import profile from "../../public/profile_icon.jpg";
 import { useRouter } from "next/navigation";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import DeleteDialog from "@/components/DeleteDialog";
+import DeleteDialog from "../../components/DeleteDialog";
 
 const blogSchema = z.object({
   title: z.string().min(3, "Title is required"),

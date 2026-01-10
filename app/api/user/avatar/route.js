@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import { ConnectDB } from "@/lib/config/db";
-import UserModel from "@/models/UserModel";
+import { ConnectDB } from "../../../../lib/config/db";
+import UserModel from "../../../../models/UserModel";
 import { writeFile } from "fs/promises";
 import fs from "fs";
-import { verifyToken } from "@/lib/utils/auth";
-import cloudinary from "@/lib/config/cloudinary";
+import { verifyToken } from "../../../../lib/utils/auth";
+import cloudinary from "../../../../lib/config/cloudinary";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

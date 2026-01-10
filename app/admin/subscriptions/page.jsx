@@ -10,11 +10,11 @@ import {
   TableRow,
   TableFooter,
 } from "../../../components/ui/table";
-import api from "@/lib/api";
+import api from "../../../lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Button } from "@/components/ui/button";
-import DeleteDialog from "@/components/DeleteDialog";
+import { Button } from "../../../components/ui/button";
+import DeleteDialog from "../../../components/DeleteDialog";
 
 const Page = () => {
   const [emails, setEmails] = useState([]);

@@ -2,7 +2,7 @@ import Image from "next/image";
 import React from "react";
 import { TableRow, TableCell } from "../ui/table";
 import { Button } from "../ui/button";
-import profile from "@/public/profile_icon.jpg";
+import profile from "../../public/profile_icon.jpg";
 
 const BlogTableItem = ({ blog, deleteBlog }) => {
   const { authorImg, title, date, author, _id: mongoId } = blog;

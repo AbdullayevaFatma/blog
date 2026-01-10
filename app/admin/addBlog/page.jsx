@@ -1,11 +1,11 @@
 "use client";
 
-import { useAuth } from "@/lib/context/AuthContext";
-import api from "@/lib/api";
+import { useAuth } from "../../../lib/context/AuthContext";
+import api from "../../../lib/api";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import upload_area from "@/public/upload_area.png";
+import upload_area from "../../../public/upload_area.png";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";

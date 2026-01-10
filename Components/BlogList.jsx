@@ -2,7 +2,7 @@
 
 import BlogItem from "./BlogItem";
 import { useEffect, useState } from "react";
-import api from "@/lib/api";
+import api from "../lib/api";
 
 const BlogList = () => {
   const [menu, setMenu] = useState("All");
