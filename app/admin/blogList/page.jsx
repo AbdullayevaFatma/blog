@@ -11,7 +11,7 @@ import {
   TableRow,
   TableFooter,
   TableCell,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";

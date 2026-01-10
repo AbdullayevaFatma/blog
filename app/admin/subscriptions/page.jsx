@@ -9,11 +9,11 @@ import {
   TableHeader,
   TableRow,
   TableFooter,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import DeleteDialog from "@/components/DeleteDialog";
 
 const Page = () => {

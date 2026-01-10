@@ -5,7 +5,7 @@ import api from "@/lib/api";
 import Image from "next/image";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 const Page = ({ params }) => {
   const { id } = use(params);

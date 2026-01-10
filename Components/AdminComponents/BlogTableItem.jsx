@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
-import { TableRow, TableCell } from "../ui/table";
-import { Button } from "../ui/button";
+import { TableRow, TableCell } from "../ui/Table";
+import { Button } from "../ui/Button";
 import profile from "@/public/profile_icon.jpg";
 
 const BlogTableItem = ({ blog, deleteBlog }) => {
