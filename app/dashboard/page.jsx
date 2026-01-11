@@ -1,39 +1,26 @@
 "use client";
 
-import { useAuth } from "../../lib/context/AuthContext";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
-import { Label } from "../../components/ui/label";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/form";
 import { User, Mail, Shield, Camera, Plus, Trash2, Edit } from "lucide-react";
 import { toast } from "react-toastify";
-import api from "../../lib/api";
 import upload_area from "../../public/upload_area.png";
 import profile from "../../public/profile_icon.jpg";
 import { useRouter } from "next/navigation";
-
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import DeleteDialog from "../../components/DeleteDialog";
+import { useAuth } from "lib/context/AuthContext";
+import api from "lib/api";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { Button } from "components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "components/ui/form";
+import { Label } from "components/ui/label";
+import { Input } from "components/ui/input";
+import { Textarea } from "components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
+import DeleteDialog from "components/DeleteDialog";
 
 const blogSchema = z.object({
   title: z.string().min(3, "Title is required"),

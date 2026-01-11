@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import SidebarButton from "./SidebarButton";
 
+
 const Sidebar = () => {
   return (
     <div className="flex flex-col gap-6 bg-emerald-600/20 h-screen min-w-40 sm:min-w-50 md:w-80 overflow-hidden px-4 py-6">

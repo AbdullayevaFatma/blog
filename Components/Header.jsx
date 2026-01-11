@@ -3,23 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../lib/context/AuthContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "./ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import api from "../lib/api";
 import profile from "../public/profile_icon.jpg";
+import { useAuth } from "lib/context/AuthContext";
+import api from "lib/api";
+import { Button } from "./ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
 
 const emailFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),

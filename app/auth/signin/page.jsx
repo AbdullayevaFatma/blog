@@ -1,24 +1,17 @@
 "use client";
 
 import { z } from "zod";
-import api from "../../../lib/api";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { useAuth } from "../../../lib/context/AuthContext";
 import { useEffect, useState } from "react";
-
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormMessage,
-} from "../../../components/ui/form";
-import { Input } from "../../../components/ui/input";
-import { Button } from "../../../components/ui/button";
 import Link from "next/link";
+import api from "lib/api";
+import { useAuth } from "lib/context/AuthContext";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "components/ui/form";
+import { Input } from "components/ui/input";
+import { Button } from "components/ui/button";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),

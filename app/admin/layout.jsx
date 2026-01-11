@@ -1,18 +1,13 @@
 "use client";
 
-import Sidebar from "../../components/adminComponents/Sidebar";
+
 import Image from "next/image";
-import { useAuth } from "../../lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
 import profile from "../../public/profile_icon.jpg";
+import { useAuth } from "lib/context/AuthContext";
+import Sidebar from "components/adminComponents/Sidebar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "components/ui/dropdown-menu";
 
 export default function AdminLayout({ children }) {
   const { user, loading, logout } = useAuth();

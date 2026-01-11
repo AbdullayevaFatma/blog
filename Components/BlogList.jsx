@@ -1,8 +1,10 @@
 "use client";
 
-import BlogItem from "./BlogItem";
+
+import api from "lib/api";
 import { useEffect, useState } from "react";
-import api from "../lib/api";
+import BlogItem from "./BlogItem";
+
 
 const BlogList = () => {
   const [menu, setMenu] = useState("All");
@@ -44,7 +46,7 @@ const BlogList = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-100 py-20">
-        <div className="text-center max-w-md mx-auto p-8 bg-zinc-900 rounded-xl border border-red-500/30">
+        <div className="text-center max-w-md mx-auto p-8 bg-zinc-900 ">
           <p className="text-zinc-100 mb-4">{error}</p>
           <button
             onClick={fetchBlogs}

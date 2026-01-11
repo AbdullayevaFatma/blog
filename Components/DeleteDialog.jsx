@@ -2,13 +2,13 @@
 
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogCancel,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogAction
 } from "./ui/alert-dialog";
 
 const DeleteDialog = ({

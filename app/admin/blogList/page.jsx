@@ -1,18 +1,10 @@
 "use client";
 
-import BlogTableItem from "../../../components/adminComponents/BlogTableItem";
-import DeleteDialog from "../../../components/DeleteDialog";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableFooter,
-  TableCell,
-} from "../../../components/ui/table";
-import api from "../../../lib/api";
+
+import BlogTableItem from "components/adminComponents/BlogTableItem";
+import DeleteDialog from "components/DeleteDialog";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "components/ui/table";
+import api from "lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
