@@ -1,23 +1,27 @@
 "use client";
 
-
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import upload_area from "../../../public/upload_area.png";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import { Label } from "components/ui/label";
-import { Input } from "components/ui/input";
-import { Textarea } from "components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
-import { Button } from "components/ui/button";
-import { useAuth } from "lib/context/AuthContext";
-import api from "lib/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/context/AuthContext";
+import api from "@/lib/api";
 
 const blogSchema = z.object({
   title: z.string().min(2, "Title is required"),
@@ -115,9 +119,8 @@ export default function AdminAddBlogPage() {
                       ? typeof blogImage === "string"
                         ? blogImage
                         : URL.createObjectURL(blogImage)
-                      : upload_area
+                      : "/upload_area.jpg"
                   }
-                  al
                   alt="upload"
                   width={140}
                   height={80}

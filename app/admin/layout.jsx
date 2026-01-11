@@ -4,10 +4,9 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import profile from "../../public/profile_icon.jpg";
-import { useAuth } from "lib/context/AuthContext";
-import Sidebar from "components/adminComponents/Sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "components/ui/dropdown-menu";
+import { useAuth } from "@/lib/context/AuthContext";
+import Sidebar from "@/components/adminComponents/Sidebar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function AdminLayout({ children }) {
   const { user, loading, logout } = useAuth();
@@ -77,7 +76,7 @@ export default function AdminLayout({ children }) {
                   </span>
                   <div className="relative w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden hover:border-emerald-500 transition-colors">
                     <Image
-                      src={user.avatar || profile}
+                        src={user.avatar || "/profile_icon.jpg"}
                       alt="profile icon"
                       fill
                       className="object-cover"

@@ -1,10 +1,10 @@
 "use client";
 
 
-import DeleteDialog from "components/DeleteDialog";
-import { Button } from "components/ui/button";
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "components/ui/table";
-import api from "lib/api";
+import DeleteDialog from "@/components/DeleteDialog";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 

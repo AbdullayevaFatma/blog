@@ -1,26 +1,36 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { User, Mail, Shield, Camera, Plus, Trash2, Edit } from "lucide-react";
 import { toast } from "react-toastify";
-import upload_area from "../../public/upload_area.png";
-import profile from "../../public/profile_icon.jpg";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "lib/context/AuthContext";
-import api from "lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import { Button } from "components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "components/ui/form";
-import { Label } from "components/ui/label";
-import { Input } from "components/ui/input";
-import { Textarea } from "components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
-import DeleteDialog from "components/DeleteDialog";
+import { useAuth } from "@/lib/context/AuthContext";
+import api from "@/lib/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import DeleteDialog from "@/components/DeleteDialog";
 
 const blogSchema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -165,24 +175,24 @@ export default function DashboardPage() {
     }
   };
 
-const handleBlogDelete = async () => {
-  if (!deleteId) return;
+  const handleBlogDelete = async () => {
+    if (!deleteId) return;
 
-  try {
-    const response = await api.delete("/blog", {
-      params: { id: deleteId },
-    });
+    try {
+      const response = await api.delete("/blog", {
+        params: { id: deleteId },
+      });
 
-    if (response.data.success) {
-      toast.success(response.data.message);
-      fetchUserBlogs();
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchUserBlogs();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete blog");
+    } finally {
+      setDeleteId(null);
     }
-  } catch (error) {
-    toast.error(error.response?.data?.message || "Failed to delete blog");
-  } finally {
-    setDeleteId(null);
-  }
-};
+  };
 
   const handleEditClick = (blog) => {
     setEditingBlogId(blog._id);
@@ -265,10 +275,10 @@ const handleBlogDelete = async () => {
                 <div className="flex flex-col items-center">
                   <div className="relative group w-25 h-25">
                     <Image
-                      src={avatarPreview || user.avatar || profile}
+                      src={avatarPreview || user.avatar || "/profile_icon.jpg"}
                       fill
                       alt="profile"
-                      className="rounded-full border-4 border-emerald-600 object-cover "
+                      className="rounded-full border-4 border-emerald-600 object-cover"
                     />
                     {!avatarPreview && (
                       <label
@@ -407,7 +417,7 @@ const handleBlogDelete = async () => {
                             ? typeof blogImage === "string"
                               ? blogImage
                               : URL.createObjectURL(blogImage)
-                            : upload_area
+                            : "/upload_area.jpg"
                         }
                         alt="upload"
                         width={140}
@@ -571,16 +581,16 @@ const handleBlogDelete = async () => {
         )}
       </div>
       <DeleteDialog
-  open={!!deleteId}
-  onOpenChange={(open) => {
-    if (!open) setDeleteId(null);
-  }}
-  onConfirm={handleBlogDelete}
-  title="Confirm Blog Deletion"
-  description="This blog will be permanently deleted. This action cannot be undone."
-  confirmText="Delete"
-  cancelText="Cancel"
-/>
+        open={!!deleteId}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        onConfirm={handleBlogDelete}
+        title="Confirm Blog Deletion"
+        description="This blog will be permanently deleted. This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

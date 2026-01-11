@@ -1,9 +1,9 @@
 import Image from "next/image";
 import React from "react";
 
-import profile from "../../public/profile_icon.jpg";
-import { TableCell, TableRow } from "components/ui/table";
-import { Button } from "components/ui/button";
+
+import { TableCell, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 const BlogTableItem = ({ blog, deleteBlog }) => {
   const { authorImg, title, date, author, _id: mongoId } = blog;
@@ -18,7 +18,7 @@ const BlogTableItem = ({ blog, deleteBlog }) => {
         <div className="flex items-center gap-3">
           <div className="relative w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden hover:border-emerald-500 transition-colors cursor-pointer">
             <Image
-              src={authorImg || profile}
+              src={authorImg || "/profile_icon.jpg"}
               alt="profile icon"
               fill
               className="object-cover"

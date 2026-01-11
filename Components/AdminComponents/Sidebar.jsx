@@ -1,7 +1,7 @@
 import { Plus, FileText, Mail } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import SidebarButton from "./SidebarButton";
+import SidebarButton from "@/components/adminComponents/SidebarButton";
 
 
 const Sidebar = () => {

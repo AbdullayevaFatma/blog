@@ -1,6 +1,6 @@
-import { ConnectDB } from "lib/config/db";
-import { verifyToken } from "lib/utils/auth";
-import UserModel from "models/UserModel";
+import { ConnectDB } from "@/lib/config/db";
+import { verifyToken } from "@/lib/utils/auth";
+import UserModel from "@/models/UserModel";
 import { NextResponse } from "next/server";
 
 

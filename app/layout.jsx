@@ -2,7 +2,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthProvider } from "lib/context/AuthContext";
+import { AuthProvider } from "@/lib/context/AuthContext";
 
 const outfit = Outfit({
   variable: "--font-outfit",

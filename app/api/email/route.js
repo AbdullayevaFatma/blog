@@ -1,7 +1,7 @@
 
-import { ConnectDB } from "lib/config/db";
-import { verifyToken } from "lib/utils/auth";
-import EmailModel from "models/EmailModel";
+import { ConnectDB } from "@/lib/config/db";
+import { verifyToken } from "@/lib/utils/auth";
+import EmailModel from "@/models/EmailModel";
 import { NextResponse } from "next/server";
 
 const LoadDB = async () => {

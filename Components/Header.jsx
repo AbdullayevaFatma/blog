@@ -7,13 +7,24 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import profile from "../public/profile_icon.jpg";
-import { useAuth } from "lib/context/AuthContext";
-import api from "lib/api";
-import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
+import { useAuth } from "@/lib/context/AuthContext";
+import api from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const emailFormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -71,7 +82,12 @@ const Header = () => {
           <div className="flex items-center gap-4 ">
             {!loading && !user && (
               <Button asChild>
-                <Link href="/auth/signin" className="bg-linear-to-r from-emerald-400 to-emerald-700">Start Blogging</Link>
+                <Link
+                  href="/auth/signin"
+                  className="bg-linear-to-r from-emerald-400 to-emerald-700"
+                >
+                  Start Blogging
+                </Link>
               </Button>
             )}
             {!loading && user && (
@@ -85,22 +101,22 @@ const Header = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <div className="relative w-12 h-12 rounded-full border-2 border-emerald-600 overflow-hidden hover:border-emerald-500 transition-colors cursor-pointer">
-                                       <Image
-                                         src={user.avatar || profile}
-                                         alt="profile icon"
-                                         fill
-                                         className="object-cover"
-                                       />
-                                     </div>
+                      <Image
+                        src={user.avatar || "/profile_icon.jpg"}
+                        alt="profile icon"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="px-2 py-3 space-y-2">
                       <p className="text-sm font-semibold text-zinc-100">
                         {user.name
-                      ? user.name.charAt(0).toUpperCase() +
-                        user.name.slice(1).toLowerCase()
-                      : ""}
+                          ? user.name.charAt(0).toUpperCase() +
+                            user.name.slice(1).toLowerCase()
+                          : ""}
                       </p>
                       <p className="text-xs text-zinc-400 truncate">
                         {user.email}

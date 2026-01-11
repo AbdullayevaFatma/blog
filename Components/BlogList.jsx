@@ -1,9 +1,9 @@
 "use client";
 
 
-import api from "lib/api";
+import api from "@/lib/api";
 import { useEffect, useState } from "react";
-import BlogItem from "./BlogItem";
+import BlogItem from "@/components/BlogItem";
 
 
 const BlogList = () => {

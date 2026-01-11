@@ -7,11 +7,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "lib/context/AuthContext";
-import api from "lib/api";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "components/ui/form";
-import { Input } from "components/ui/input";
-import { Button } from "components/ui/button";
+import { useAuth } from "@/lib/context/AuthContext";
+import api from "@/lib/api";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),

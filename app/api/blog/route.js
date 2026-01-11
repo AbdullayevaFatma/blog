@@ -1,9 +1,9 @@
-import cloudinary from "lib/config/cloudinary";
+import cloudinary from "@/lib/config/cloudinary";
 import fs from "fs";
 import { NextResponse } from "next/server";
-import { verifyToken } from "lib/utils/auth";
-import { ConnectDB } from "lib/config/db";
-import BlogModel from "models/BlogModel";
+import { verifyToken } from "@/lib/utils/auth";
+import { ConnectDB } from "@/lib/config/db";
+import BlogModel from "@/models/BlogModel";
 
 
 const { uploader } = cloudinary;
