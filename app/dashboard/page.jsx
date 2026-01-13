@@ -417,7 +417,7 @@ export default function DashboardPage() {
                             ? typeof blogImage === "string"
                               ? blogImage
                               : URL.createObjectURL(blogImage)
-                            : "/upload_area.jpg"
+                            : "/upload_area.png"
                         }
                         alt="upload"
                         width={140}

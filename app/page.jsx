@@ -1,8 +1,11 @@
 "use client";
 
-import BlogList from "@/components/BlogList";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+"use client";
+
+import Header from "../components/Header"; // alias kullanmadan direkt path
+import Footer from "../components/Footer";
+import BlogList from "../components/BlogList";
+
 
 
 export default function Home() {
