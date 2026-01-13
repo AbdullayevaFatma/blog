@@ -21,6 +21,11 @@ const Sidebar = () => {
           icon={FileText}
           label="Blog lists"
         />
+          <SidebarButton
+          href="/admin/pendingBlogs"
+          icon={FileText}
+          label="Pending blogs"
+        />
         <SidebarButton
           href="/admin/subscriptions"
           icon={Mail}

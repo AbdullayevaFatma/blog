@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { verifyToken } from "@/lib/utils/auth";
 import { ConnectDB } from "@/lib/config/db";
 import BlogModel from "@/models/BlogModel";
-
+import UserModel from "@/models/UserModel";
 
 const { uploader } = cloudinary;
 
@@ -34,12 +34,53 @@ export async function GET(request) {
     const blogId = request.nextUrl.searchParams.get("id");
     const mine = request.nextUrl.searchParams.get("mine");
 
+   
     if (blogId) {
       const blog = await BlogModel.findById(blogId).lean();
+      
       if (!blog) {
         return NextResponse.json(
           { success: false, blog: null, message: "Blog not found" },
-          { status: 404 },
+          { status: 404 }
+        );
+      }
+
+     
+      let canView = false;
+      const token = request.cookies.get("auth_token")?.value;
+
+      if (token) {
+        try {
+          const decoded = verifyToken(token);
+          const isAdmin = decoded.role === "admin";
+          const isOwner = blog.userId && blog.userId.toString() === decoded.id;
+          const blogStatus = blog.status || "approved"; 
+          
+         
+          if (isAdmin || isOwner) {
+            canView = true;
+          } else if (blogStatus === "approved") {
+            
+            canView = true;
+          }
+        } catch (error) {
+          console.error("Token verification error:", error);
+          
+          if (!blog.status || blog.status === "approved") {
+            canView = true;
+          }
+        }
+      } else {
+       
+        if (!blog.status || blog.status === "approved") {
+          canView = true;
+        }
+      }
+
+      if (!canView) {
+        return NextResponse.json(
+          { success: false, message: "Blog not available or pending approval" },
+          { status: 403 }
         );
       }
 
@@ -49,21 +90,34 @@ export async function GET(request) {
       });
     }
 
+   
     if (mine === "true") {
       const token = request.cookies.get("auth_token")?.value;
+      
       if (!token) {
         return NextResponse.json(
           { success: false, message: "Unauthorized" },
-          { status: 401 },
+          { status: 401 }
         );
       }
 
-      const decoded = verifyToken(token);
+      let decoded;
+      try {
+        decoded = verifyToken(token);
+      } catch (error) {
+        return NextResponse.json(
+          { success: false, message: "Invalid token" },
+          { status: 401 }
+        );
+      }
 
       let blogs;
+      
       if (decoded.role === "admin") {
+       
         blogs = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
       } else {
+       
         blogs = await BlogModel.find({ userId: decoded.id })
           .sort({ createdAt: -1 })
           .lean();
@@ -75,20 +129,27 @@ export async function GET(request) {
       });
     }
 
-    const blogs = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
+  
+    const blogs = await BlogModel.find({
+      $or: [
+        { status: "approved" },
+        { status: { $exists: false } } 
+      ]
+    }).sort({ createdAt: -1 }).lean();
+
     return NextResponse.json({
       success: true,
       blogs: blogs.map(sanitizeBlog),
     });
+    
   } catch (error) {
     console.error("Get blogs error:", error);
     return NextResponse.json(
       { success: false, message: "Server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
-
 function sanitizeBlog(blog) {
   return {
     _id: blog._id,
@@ -96,9 +157,13 @@ function sanitizeBlog(blog) {
     description: blog.description,
     category: blog.category,
     author: blog.author,
-    authorImg: safeUrl(blog.authorImg, "/profile_icon.jpg"),
-    image: safeUrl(blog.image, "/blog_pic_1.jpg"),
+    authorImg: blog.authorImg || "/profile_icon.jpg",
+    image: blog.image || "/blog_pic_1.jpg",
     userId: blog.userId,
+    status: blog.status,
+    rejectionReason: blog.rejectionReason,
+    approvedBy: blog.approvedBy,
+    approvedAt: blog.approvedAt,
     createdAt: blog.createdAt,
     updatedAt: blog.updatedAt,
     date: blog.createdAt,
@@ -111,7 +176,7 @@ export async function POST(request) {
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized. Please login." },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -121,7 +186,7 @@ export async function POST(request) {
     } catch (error) {
       return NextResponse.json(
         { success: false, message: "Invalid token. Please login again." },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -135,39 +200,42 @@ export async function POST(request) {
     if (!title || !description || !category || !image) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // const imageBuffer = Buffer.from(await image.arrayBuffer());
-    // const imagePath = `./public/${timeStamp}_${image.name}`;
-    // await writeFile(imagePath, imageBuffer);
-    // const imgUrl = `/${timeStamp}_${image.name}`;
+    if (!image || !image.arrayBuffer) {
+      return NextResponse.json(
+        { success: false, message: "Image required" },
+        { status: 400 }
+      );
+    }
 
-   if (!image || !image.arrayBuffer) {
-  return NextResponse.json({ success: false, message: "Image required" }, { status: 400 });
-}
-const imgBuffer = Buffer.from(await image.arrayBuffer());
-const imgUpload = await uploader.upload("data:image/png;base64," + imgBuffer.toString("base64"), {
-  folder: "blog_images",
-});
-const imgUrl = imgUpload.secure_url;
+    const imgBuffer = Buffer.from(await image.arrayBuffer());
+    const imgUpload = await uploader.upload(
+      "data:image/png;base64," + imgBuffer.toString("base64"),
+      { folder: "blog_images" }
+    );
+    const imgUrl = imgUpload.secure_url;
 
     let authorImgUrl = "/profile_icon.jpg";
     const user = await UserModel.findById(decoded.id);
+
     if (authorImgInput && authorImgInput.arrayBuffer) {
       const authorBuffer = Buffer.from(await authorImgInput.arrayBuffer());
-      const authorTempPath = `/tmp/${Date.now()}_author_${authorImgInput.name}`;
-      await Deno.writeFile(authorTempPath, authorBuffer).catch(() => {});
-      const authorUpload = await cloudinary.uploader.upload(authorTempPath, {
-        folder: "author_images",
-      });
+      const authorUpload = await uploader.upload(
+        "data:image/png;base64," + authorBuffer.toString("base64"),
+        { folder: "author_images" }
+      );
       authorImgUrl = authorUpload.secure_url;
     } else if (typeof authorImgInput === "string" && authorImgInput) {
       authorImgUrl = authorImgInput;
     } else if (user?.avatar) {
       authorImgUrl = user.avatar;
     }
+
+ 
+    const status = decoded.role === "admin" ? "approved" : "pending";
 
     const blogData = {
       title,
@@ -177,22 +245,27 @@ const imgUrl = imgUpload.secure_url;
       authorImg: authorImgUrl,
       image: imgUrl,
       userId: decoded.id,
+      status,
     };
 
     await BlogModel.create(blogData);
 
+    const message = decoded.role === "admin"
+      ? "Blog added successfully!"
+      : "Blog submitted for approval. It will be visible after admin review.";
+
     return NextResponse.json(
       {
         success: true,
-        message: "Blog added successfully!",
+        message,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
     console.error("Blog create error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create blog" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -20,7 +20,8 @@ const BlogTableItem = ({ blog, deleteBlog }) => {
             <Image
               src={authorImg || "/profile_icon.jpg"}
               alt="profile icon"
-              fill
+               sizes="48px"
+               fill
               className="object-cover"
             />
           </div>

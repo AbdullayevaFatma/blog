@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+
+
+
 const BlogSchema = new mongoose.Schema(
   {
     title: {
@@ -7,7 +10,6 @@ const BlogSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    
     description: {
       type: String,
       required: true,
@@ -19,9 +21,8 @@ const BlogSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ["Technology", "AI", "Startups","Events"],
+      enum: ["Technology", "AI", "Startups", "Events"],
     },
-  
     author: {
       type: String,
       required: true,
@@ -30,11 +31,31 @@ const BlogSchema = new mongoose.Schema(
       type: String,
       default: "/profile_icon.jpg",
     },
-    
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
-      required: false, 
+      required: true,
+    },
+    
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending", 
+    },
+  
+    rejectionReason: {
+      type: String,
+      default: null,
+    },
+   
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      default: null,
+    },
+    approvedAt: {
+      type: Date,
+      default: null,
     },
   },
   { timestamps: true }
