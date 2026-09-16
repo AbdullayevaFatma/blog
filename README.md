@@ -45,23 +45,23 @@ Admins and users can manage blog content through a clean, responsive, and role-b
   ## 📸 Screenshots
 
 ### Admin Panel
-![Admin Panel](./public/screenshots/adminPanel)
+![Admin Panel](./public/screenshots/adminPanel.png)
 
 ### Homepage
-![Home Page](./public/screenshots/homepage)
+![Home Page](./public/screenshots/homepage.png)
 
 ### Dashboard
-![Dashboard](./public/screenshots/dashboard)
+![Dashboard](./public/screenshots/dashboard.png)
 
 ### Blog Detail
-![Blog Detail](./public/screenshots/blogDetail)
+![Blog Detail](./public/screenshots/blogDetail.png)
 
 ### Create Blog Page
-![CreateBlog](./public/screenshots/createblogpage)
+![CreateBlog](./public/screenshots/createblogpage.png)
 
 
 ### Sign In
-![Sign In](./public/screenshots/signin)
+![Sign In](./public/screenshots/signin.png)
 
 ## 🛠️ Scripts
 
