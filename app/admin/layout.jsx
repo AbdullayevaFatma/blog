@@ -5,13 +5,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
-
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Sidebar from "@/components/adminComponents/Sidebar";
 
 export default function AdminLayout({ children }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
+  
 
   useEffect(() => {
     if (!loading) {

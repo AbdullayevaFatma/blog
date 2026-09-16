@@ -69,7 +69,7 @@ const Page = ({ params }) => {
         <div className="relative z-10 flex justify-between items-center">
           <Link href="/">
             <h1 className="text-2xl sm:text-4xl font-bold tracking-wide text-emerald-50 cursor-pointer hover:text-emerald-100 transition-colors duration-300">
-              blog<span className="text-emerald-400">.</span>
+              blog.
             </h1>
           </Link>
           <Link href="/">

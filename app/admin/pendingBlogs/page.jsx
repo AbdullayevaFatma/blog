@@ -223,7 +223,7 @@ const Page = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Reject Dialog */}
+   
       <AlertDialog open={!!rejectId} onOpenChange={() => setRejectId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
