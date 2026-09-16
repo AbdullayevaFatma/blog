@@ -1,35 +1,67 @@
 # 📝 Modern Blog Platform – Next.js Blog App
 
-A modern, full-stack **Blog Application** built with **Next.js**.
-Includes **Admin & User authentication**, role-based dashboards, and a clean content management experience.
+A modern, full-stack Blog Application built with Next.js.
+Admins and users can manage blog content through a clean, responsive, and role-based interface.
 
-This project allowing admins and users to manage blog content efficiently.
-## 🌐 Live Demo   https://blog-abdulla.vercel.app/
+## 🚀 Live Demo
+
+**[View Live Demo](https://blog-abdulla.vercel.app/)** 🔗
 
 
+## ✨ Features
 
----
+- 🔐 Admin & user authentication
+- 👥 Role-based dashboards
+- 📝 Blog creation and management
+- 📄 Blog detail pages
+- 🗄️ MongoDB database
+- ⚡ Mongoose ODM
+- 🖼️ Cloudinary image upload & management
+- 📱 Responsive design
+- 🎨 shadcn/ui components
+- 🔔 Toast notifications
+- ✅ Form validation with Zod
 
-## 🚀 Tech Stack
 
-| Technology             | Purpose                        |
-| ---------------------- | ------------------------------ |
-| **Next.js 16**         | App Router, SSR, SEO           |
-| **React 19**           | UI components & state          |
-| **TailwindCSS v4**     | Modern utility-first styling   |
-| **shadcn/ui**          | Reusable UI components         |
-| **MongoDB & Mongoose** | Database & ODM                 |
-| **JWT (jsonwebtoken)** | Authentication & authorization |
-| **bcryptjs**           | Password hashing               |
-| **Axios**              | API requests                   |
-| **React Hook Form**    | Form handling                  |
-| **Zod**                | Schema validation              |
-| **Radix UI**           | Accessible UI components       |
-| **Lucide React**       | Icon system                    |
-| **Cloudinary**         | Image upload & management      |
-| **React Toastify**     | Notifications                  |
+## 🛠️ Tech Stack
 
----
+- **Framework:** Next.js 16
+- **UI:** React 19
+- **Styling:** Tailwind CSS v4
+- **Components:** shadcn/ui
+- **Database:** MongoDB
+- **ODM:** Mongoose
+- **Authentication:** JWT (jsonwebtoken)
+- **Password Hashing:** bcryptjs
+- **API Requests:** Axios
+- **Form Handling:** React Hook Form
+- **Validation:** Zod
+- **UI Components:** Radix UI
+- **Icons:** Lucide React
+- **Image Management:** Cloudinary
+- **Notifications:** React Toastify
+- **Deployment:** Vercel
+
+  ## 📸 Screenshots
+
+### Admin Panel
+![Admin Panel](./public/screenshots/adminPanel)
+
+### Homepage
+![Home Page](./public/screenshots/homepage)
+
+### Dashboard
+![Dashboard](./public/screenshots/dashboard)
+
+### Blog Detail
+![Blog Detail](./public/screenshots/blogDetail)
+
+### Create Blog Page
+![CreateBlog](./public/screenshots/createblogpage)
+
+
+### Sign In
+![Sign In](./public/screenshots/signin)
 
 ## 🛠️ Scripts
 
